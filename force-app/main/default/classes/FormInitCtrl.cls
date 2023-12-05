@@ -198,51 +198,51 @@ public without sharing class FormInitCtrl {
       }
 
       // check map filter is not empty // support for one map value
-      // if (!mapFilterContactQuery.isEmpty()) {
-      //   String fieldName = '';
-      //   String fieldValue = '';
-      //   for (String filterName : mapFilterContactQuery.keySet()) {
-      //     fieldName = filterName;
-      //     fieldValue = mapFilterContactQuery.get(filterName);
-      //   }
-      //   for (String objName : mapData.keySet()) {
-      //     String strQuery =
-      //       'SELECT Id FROM ' +
-      //       objName +
-      //       ' WHERE Email = ' +
-      //       '\'' +
-      //       email +
-      //       '\'' +
-      //       ' AND ' +
-      //       fieldName +
-      //       ' = ' +
-      //       '\'' +
-      //       fieldValue +
-      //       '\'' +
-      //       ' Limit 1';
-      //     List<sObject> existRecord = Database.query(strQuery);
-      //     System.debug('Query: ' + existRecord);
-      //     if (existRecord.size() > 0) {
-      //       sObj.put('Id', existRecord[0].Id);
-      //     }
-      //   }
-      // } else {
-      //   for (String objName : mapData.keySet()) {
-      //     String strQuery =
-      //       'SELECT Id FROM ' +
-      //       objName +
-      //       ' WHERE Email = ' +
-      //       '\'' +
-      //       email +
-      //       '\'' +
-      //       ' Limit 1';
-      //     List<sObject> existRecord = Database.query(strQuery);
-      //     System.debug('query: ' + Database.query(strQuery));
-      //     if (existRecord.size() > 0) {
-      //       sObj.put('Id', existRecord[0].Id);
-      //     }
-      //   }
-      // }
+      if (!mapFilterContactQuery.isEmpty()) {
+        String fieldName = '';
+        String fieldValue = '';
+        for (String filterName : mapFilterContactQuery.keySet()) {
+          fieldName = filterName;
+          fieldValue = mapFilterContactQuery.get(filterName);
+        }
+        for (String objName : mapData.keySet()) {
+          String strQuery =
+            'SELECT Id FROM ' +
+            objName +
+            ' WHERE Email = ' +
+            '\'' +
+            email +
+            '\'' +
+            ' AND ' +
+            fieldName +
+            ' = ' +
+            '\'' +
+            fieldValue +
+            '\'' +
+            ' Limit 1';
+          List<sObject> existRecord = Database.query(strQuery);
+          System.debug('Query: ' + existRecord);
+          if (existRecord.size() > 0) {
+            sObj.put('Id', existRecord[0].Id);
+          }
+        }
+      } else {
+        for (String objName : mapData.keySet()) {
+          String strQuery =
+            'SELECT Id FROM ' +
+            objName +
+            ' WHERE Email = ' +
+            '\'' +
+            email +
+            '\'' +
+            ' Limit 1';
+          List<sObject> existRecord = Database.query(strQuery);
+          System.debug('query: ' + Database.query(strQuery));
+          if (existRecord.size() > 0) {
+            sObj.put('Id', existRecord[0].Id);
+          }
+        }
+      }
 
       lstRecord.add(sObj);
     }
@@ -516,7 +516,7 @@ public without sharing class FormInitCtrl {
         opp.Transaction_fee_deducted_from_settlement__c = feePerMember > 0
           ? false
           : true;
-        // opp.put(linkOppField, lstRecord[linkObjIndex].Id);
+        opp.put(linkOppField, lstRecord[linkObjIndex].Id);
 
         insert opp;
         System.debug('After if');

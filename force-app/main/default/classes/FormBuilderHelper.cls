@@ -104,7 +104,7 @@ public without sharing class FormBuilderHelper {
       fieldRelateionship = 'Contact_Payment__c';
     }
 
-    // mapResults.put('fieldRelation', fieldRelateionship);
+    mapResults.put('fieldRelation', fieldRelateionship);
 
     // get picklist fields for FormBuilder
     List<Map<String, String>> lstFields = new List<Map<String, String>>();
