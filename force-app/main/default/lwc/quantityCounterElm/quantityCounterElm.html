@@ -1,0 +1,30 @@
+<!-- sldsValidatorIgnore! -->
+<template>
+  <div class="slds-form-element slds-align_absolute-center counter-container">
+    <!-- <label class="slds-form-element__label slds-m-right_none" for="default1"></label> -->
+    <div class="slds-form-element__control">
+      <button class="slds-button slds-button_icon slds-button_icon-small slds-input__button_increment"
+        title="Increment counter" onclick={setIncrementCounter}>
+        <lightning-icon icon-name="utility:chevronup" alternative-text="" size="xx-small" title="" variant="success">
+        </lightning-icon>
+        <!-- <span class="slds-assistive-text">Increment counter</span> -->
+      </button>
+
+      <!-- <svg class="slds-button__icon">
+          <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#ban"></use>
+        </svg> -->
+      <!-- <lightning-icon icon-name="utility:ban" alternative-text="" size="xx-small" title="" variant="error"
+          onclick={setDecrementCounter}>
+        </lightning-icon> -->
+      <button class="slds-button slds-button_icon slds-button_icon-small slds-input__button_decrement"
+        title="Decrement counter" onclick={setDecrementCounter}>
+        <lightning-icon icon-name="utility:chevrondown" alternative-text="Decrease" title="Decrease" variant="error"
+          size="xx-small"></lightning-icon>
+        <span class="slds-assistive-text">Decrement counter</span>
+      </button>
+      <input type="number" id="default1" placeholder="0" class="slds-input slds-input_counter" value={quantity}
+        min="0" />
+
+    </div>
+  </div>
+</template>

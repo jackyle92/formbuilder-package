@@ -1,0 +1,125 @@
+:host {
+  --slds-c-card-footer-color-border: #ced4da;
+  --slds-c-card-shadow: 0 1px 1px rgba(#ced4da);
+  --slds-c-button-brand-color-background: #0070d2;
+}
+
+.flex-container {
+  display: flex;
+  flex-flow: row wrap;
+  width: 463px;
+}
+
+.drag-item {
+  background-color: #4bc076;
+  color: white;
+}
+
+[draggable="true"] {
+  cursor: move;
+}
+
+.drag {
+  border-style: dashed;
+  opacity: 0.25;
+}
+
+.selected-cmp {
+  border-style: dashed;
+  border-color: #4bc076;
+}
+
+.drag-enter {
+  border-top: green;
+  border-top-style: dashed;
+}
+
+.member-question-box {
+  border-bottom-left-radius: var(--lwc-borderRadiusLarge, 0.5rem);
+  border-bottom-right-radius: var(--lwc-borderRadiusLarge, 0.5rem);
+  background-color: white;
+  padding: 7px;
+  margin-bottom: 10px;
+}
+
+.image {
+  max-height: 40px;
+}
+
+.brand-box {
+  border-top-left-radius: var(--lwc-borderRadiusLarge, 0.5rem);
+  border-top-right-radius: var(--lwc-borderRadiusLarge, 0.5rem);
+  background-color: var(--brandColor);
+  padding: 7px;
+}
+
+.button-brand {
+  /* --sds-c-button-outline-brand-color-background: var(--brandColor);
+  --sds-c-button-brand-color-background: var(--brandColor);
+  --sds-c-button-brand-color-border: var(--brandColor);
+  --sds-c-button-brand-color-border-hover: var(--brandColor);
+  --sds-c-button-brand-color-background-hover: var(--brandColor); */
+}
+
+.slds-buttons_band {
+  margin-top: 20px;
+  padding: 5px 80px;
+  font-weight: 500;
+  font-size: x-large;
+  cursor: pointer;
+}
+
+.slds-button_brand:hover {}
+
+.button-outline {
+  /* --sds-c-button-outline-brand-color-border: var(--brandColor);
+  --sds-c-button-outline-brand-color-border-hover: var(--brandColor);
+  --sds-c-button-outline-brand-color-border-active: var(--brandColor);
+  --sds-c-button-outline-brand-color-background-active: transparent;
+  --sds-c-button-text-color: var(--brandColor);
+  --sds-c-button-text-color-active: var(--brandColor);
+  --sds-c-button-inverse-text-color: var(--brandColor);
+  --sds-c-button-inverse-text-color-active: var(--brandColor); */
+}
+
+.col-name {
+  background-color: #dee2e6;
+  color: #212529;
+}
+
+.tooltip-hide {
+  display: none;
+}
+
+.tooltip-show {
+  display: block;
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: #f03e3e;
+}
+
+button label {
+  cursor: pointer;
+}
+
+:host .radio-group,
+.multiple-checkbox {
+  --lwc-fontWeightBold: 400;
+}
+
+:host .slds-form-element {
+  --lwc-formLabelFontSize: 0.8rem;
+  --lwc-fontWeightBold: 400;
+}
+
+.wrapped-content {
+  overflow-wrap: break-word;
+}
+
+/* slds-form-element__legend */
+
+/* tablet */
+@media only screen and (min-width: 430px) and (max-width: 768px) {}
+
+/* for smartphone */
+@media only screen (max-width: 430px) {}

@@ -1,0 +1,852 @@
+<template>
+  <lightning-card title="FORM BUILDER">
+    <lightning-spinner if:true={showSpinner} variant="brand"></lightning-spinner>
+
+    <lightning-button variant="brand" label="Save" onclick={saveFormBuilder} slot="actions"></lightning-button>
+    <!-- make preview  -->
+    <lightning-button class="slds-var-p-left_xxx-small" variant="brand" label="Preview" onclick={handlePreviewForms}
+      slot="actions">
+    </lightning-button>
+    <lightning-button class="slds-var-p-left_xxx-small" variant="brand" label="Publish To Site" onclick={gotoAllSite}
+      slot="actions">
+    </lightning-button>
+
+
+    <!-- Modal preview -->
+    <template if:true={isShowFormPreview}>
+      <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+        aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+          <!-- modal header start -->
+          <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+              onclick={hideFormPreview}>
+              <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                size="small"></lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Form Preview
+            </h2>
+          </header>
+
+          <!-- modal body start -->
+          <div class="slds-modal__content slds-var-p-around_small" id="modal-content-id-2">
+            <div class="license-info-ontainter">
+              <c-form-init get-form-id-value={formId}></c-form-init>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <div class="slds-var-m-around_xx-small" style="min-height: 510px">
+      <div class="slds-grid">
+        <div class="slds-col slds-size_3-of-12">
+          <div class="slds-box slds-var-m-around_xxx-small" style="border:none;">
+            <lightning-accordion active-section-name={activeSections}>
+              <!-- allow-multiple-sections-open -->
+
+              <lightning-accordion-section class="slds-is-open slds-var-m-around_xxx-small" name="A" label="Fields">
+                <div class="slds-grid slds-wrap">
+                  <!-- <div class="slds-col slds-size_1-of-1 "> -->
+                  <!-- Add section -->
+                  <!-- <div class="slds-col slds-size_1-of-2">
+                    <div data-name="section" draggable="true" ondragstart={DragStart} ondragend={DragEnd}
+                      class="slds-box slds-box_x-small slds-m-around_xx-small drag-item"
+                      style="background-color: #ff6b6b;text-align: center">
+                      <span>
+                        <lightning-icon icon-name="utility:section" size="x-small"
+                          title="Section/Not available"></lightning-icon>
+                        &nbsp;Section
+                      </span>
+                    </div>
+                  </div> -->
+
+                  <!-- Empty space -->
+                  <div class="slds-col slds-size_1-of-2">
+                    <div data-name="spacer" draggable="true" ondragstart={DragStart} ondragend={DragEnd}
+                      class="slds-box slds-box_x-small slds-m-around_xx-small drag-item slds-grid">
+                      <lightning-icon class="slds-col" icon-name="utility:spacer" size="x-small"
+                        title="Empty Space"></lightning-icon>
+                      <span class="slds-col">&nbsp;Spacer</span>
+                      <!-- <span class="slds-align-text_center">
+                  			</span> -->
+                    </div>
+                  </div>
+                  <!-- Add radio group -->
+                  <div class="slds-col slds-size_1-of-2">
+                    <div data-name="radio" draggable="true" ondragstart={DragStart} ondragend={DragEnd}
+                      class="slds-box slds-box_x-small slds-var-m-around_xx-small drag-item slds-grid">
+                      <lightning-icon class="slds-col slds-text-align_left" icon-name="utility:radio_button"
+                        size="x-small" title="Radio Group"></lightning-icon>
+                      <span class="slds-col"> &nbsp;Radio </span>
+                    </div>
+                  </div>
+
+                  <!-- input date -->
+                  <div class="slds-col slds-size_1-of-2">
+                    <div data-name="input-date" draggable="true" ondragstart={DragStart} ondragend={DragEnd}
+                      class="slds-box slds-box_x-small slds-var-m-around_xx-small drag-item slds-grid">
+                      <lightning-icon icon-name="utility:date_input" size="x-small"
+                        class="slds-col slds-text-align_left" title="Input Date"></lightning-icon>
+                      <span class="slds-col"> &nbsp;Date </span>
+                    </div>
+                  </div>
+
+                  <!-- Add check box -->
+                  <div class="slds-col slds-size_1-of-2">
+                    <div data-name="checkbox" draggable="true" ondragstart={DragStart} ondragend={DragEnd}
+                      class="slds-box slds-box_x-small slds-m-around_xx-small drag-item slds-grid">
+                      <lightning-icon class="slds-col slds-text-align_left" icon-name="utility:multi_select_checkbox"
+                        size="x-small" title="Multipicklist"></lightning-icon>
+                      <span class="slds-col"> &nbsp;Multipicklist </span>
+                    </div>
+                  </div>
+
+                  <!-- Add address box -->
+                  <div class="slds-col slds-size_1-of-2">
+                    <div data-name="address" draggable="true" ondragstart={DragStart} ondragend={DragEnd}
+                      class="slds-box slds-box_x-small slds-m-around_xx-small drag-item slds-grid">
+                      <lightning-icon class="slds-col slds-text-align_left" icon-name="utility:checkin" size="x-small"
+                        title="Composit address field"></lightning-icon>
+                      <span class="slds-col"> &nbsp;Address </span>
+                    </div>
+                  </div>
+
+                  <!-- Confirmation Checkbox -->
+                  <div class="slds-col slds-size_1-of-2">
+                    <div data-name="confirmCheckbox" draggable="true" ondragstart={DragStart} ondragend={DragEnd}
+                      class="slds-box slds-box_x-small slds-m-around_xx-small drag-item slds-grid">
+                      <lightning-icon class="slds-col slds-text-align_left" icon-name="utility:check" size="x-small"
+                        title="Confirmation Check"></lightning-icon>
+                      <span class="slds-col"> &nbsp;Confirmation </span>
+                    </div>
+                  </div>
+
+                  <!-- Add picklist field -->
+                  <div class="slds-col slds-size_1-of-2">
+                    <div data-name="pickList" draggable="true" ondragstart={DragStart} ondragend={DragEnd}
+                      class="slds-box slds-box_x-small slds-m-around_xx-small drag-item slds-grid">
+                      <lightning-icon class="slds-col slds-text-align_left" icon-name="utility:picklist" size="x-small"
+                        title="Picklist"></lightning-icon>
+                      <span class="slds-col"> &nbsp;Picklist </span>
+                    </div>
+                  </div>
+                  <div class="slds-col slds-size_1-of-2">
+                    <div data-name="textField" draggable="true" ondragstart={DragStart} ondragend={DragEnd}
+                      class="slds-box slds-box_x-small slds-m-around_xx-small drag-item slds-grid">
+                      <lightning-icon class="slds-col slds-text-align_left" icon-name="utility:text" size="x-small"
+                        title="Text"></lightning-icon>
+                      <span class="slds-col"> &nbsp;Text </span>
+                    </div>
+                  </div>
+                  <div class="slds-col slds-size_1-of-2">
+                    <div data-name="productList" ondragstart={DragStart} ondragend={DragEnd} draggable="true"
+                      class="slds-box slds-box_x-small slds-var-m-around_xx-small drag-item slds-grid">
+                      <lightning-icon class="slds-col" icon-name="utility:product" size="x-small"
+                        title="Product"></lightning-icon>
+                      <span class="slds-col"> &nbsp;Product </span>
+                    </div>
+                  </div>
+
+                  <div class="slds-col slds-size_1-of-2">
+                    <div data-name="paymentForm" ondragstart={DragStart} ondragend={DragEnd} draggable="true"
+                      class="slds-box slds-box_x-small slds-var-m-around_xx-small drag-item slds-grid">
+                      <lightning-icon class="slds-col slds-text-align_left" icon-name="utility:payment_gateway"
+                        size="x-small" title="Payment Gateway"></lightning-icon>
+                      <span class="slds-col"> &nbsp;Payment </span>
+                    </div>
+                  </div>
+                  <div class="slds-col slds-size_1-of-2">
+                    <div data-name="displayText" ondragstart={DragStart} ondragend={DragEnd} draggable="true"
+                      class="slds-box slds-box_x-small slds-var-m-around_xx-small drag-item slds-grid">
+                      <lightning-icon class="slds-col slds-text-align_left" icon-name="utility:display_rich_text"
+                        size="x-small" title="Display Text"></lightning-icon>
+                      <span class="slds-col"> &nbsp;DisplayText </span>
+                    </div>
+                  </div>
+                  <div class="slds-col slds-size_1-of-2">
+                    <div data-name="promotionCmp" ondragstart={DragStart} ondragend={DragEnd} draggable="true"
+                      class="slds-box slds-box_x-small slds-var-m-around_xx-small drag-item slds-grid">
+                      <lightning-icon class="slds-col slds-text-align_left" icon-name="utility:promotion_tiers"
+                        size="x-small" title="Promotion"></lightning-icon>
+                      <span class="slds-col"> &nbsp;Promotion </span>
+                    </div>
+                  </div>
+
+
+                  <!-- <div data-name="button" 
+                                            ondragstart={DragStart} 
+                                            ondragend={DragEnd} 
+                                            draggable="true" class="slds-box slds-box_x-small slds-m-around_xx-small drag-item"><p>■ Button</p></div> -->
+                  <!-- </div> -->
+                </div>
+              </lightning-accordion-section>
+
+              <lightning-accordion-section class="slds-var-m-around_xxx-small" name="B" label="Layout">
+                <div class="slds-grid slds-wrap">
+                  <div class="slds-col slds-size_1-of-2 slds-small-size_2-of-2">
+                    <div data-name="layout1Column" ondragstart={DragStart} ondragend={DragEnd} draggable="true"
+                      class="slds-text-align_center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="136" height="66" viewBox="0 0 136 66" fill="none">
+                        <rect x="2" y="2" width="110" height="62" rx="5" fill="white" />
+                        <rect x="10" y="9" width="116" height="48" rx="2" fill="#0ca678" />
+                        <rect x="1" y="1" width="134" height="64" rx="3" stroke="#0ca678" stroke-width="2"
+                          class="__web-inspector-hide-shortcut__" />
+                      </svg>
+                    </div>
+                    <div class="slds-text-align_center slds-var-p-around_small"></div>
+                  </div>
+                  <div class="slds-col slds-size_1-of-2 slds-small-size_2-of-2">
+                    <div data-name="layout2Column" ondragstart={DragStart} ondragend={DragEnd} draggable="true"
+                      class="slds-text-align_center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="136" height="66" viewBox="0 0 136 66" fill="none">
+                        <rect x="2" y="2" width="110" height="62" rx="5" fill="white" />
+                        <rect x="11" y="9" width="54" height="48" rx="2" fill="#0ca678" />
+                        <rect x="72" y="9" width="54" height="48" rx="2" fill="#0ca678" />
+                        <rect x="1" y="1" width="134" height="64" rx="3" stroke="#0ca678" stroke-width="2" />
+                      </svg>
+                    </div>
+                    <div class="slds-text-align_center slds-var-p-around_small"></div>
+                  </div>
+                </div>
+              </lightning-accordion-section>
+            </lightning-accordion>
+          </div>
+        </div>
+
+        <!-- Page to build form -->
+        <div class="slds-col slds-size_6-of-12">
+          <div class="slds-box slds-var-m-around_xxx-small slds-is-relative"
+            style="overflow: scroll; height: 80vh; border:none;">
+            <div class="slds-is-absolute" style="right: 20px">
+              <!-- <lightning-button-icon class="slds-p-right_x-small" icon-name="utility:dash"  title="Remove Screen"></lightning-button-icon> -->
+              <lightning-button-icon onclick={addNewScreen} icon-name="utility:new" size="large"
+                title="New Screen"></lightning-button-icon>
+            </div>
+
+            <lightning-tabset>
+              <template for:each={listScreen} for:item="screen" for:index="indexScreen">
+                <lightning-tab key={screen.key} label={screen.label} onactive={clearSelectedCmp}
+                  style="background-color:#f8f9fa;border-radius: 5px;">
+                  <div class="slds-align-content-center" data-cmptype="screen" data-indexscreen={indexScreen}
+                    data-name="cmpbuild" onclick={selectCmp}>
+                    <p class="slds-var-p-horizontal_medium slds-align-content-center" style="
+                        font-size: x-large;
+                        text-align: center;
+                        padding-bottom: 20px;
+                      ">
+                      {screen.label}
+                    </p>
+                  </div>
+
+                  <div style="min-height: 10rem" data-name="screen" data-indexscreen={indexScreen} ondragover={DragOver}
+                    ondrop={Drop}>
+                    <template if:true={screen.childs}>
+                      <template for:each={screen.childs} for:item="cmp" for:index="indexLayout">
+                        <div key={cmp.key} ondragover={DragOver} ondrop={Drop} data-name="cmpbuild"
+                          data-indexlayout={indexLayout} data-indexscreen={indexScreen} class="slds-is-relative">
+                          <div class="slds-is-absolute" style="right: 2px; top: -2px">
+                            <lightning-button-icon data-indexlayout={indexLayout} data-indexscreen={indexScreen}
+                              data-cmptype="layout" onclick={selectCmp} variant="bare" icon-name="utility:move"
+                              title="Layout Select"></lightning-button-icon>
+                          </div>
+
+                          <lightning-layout multiple-rows>
+                            <!-- <lightning-layout-item size="12"
+                                                    class="slds-p-horizontal_small slds-p-vertical_x-small"
+                                                    style="border: var(--lwc-borderWidthThin,1px) dotted var(--lwc-colorGray11,rgb(62, 62, 60));">
+                                                    <lightning-input-rich-text>
+                                                    </lightning-input-rich-text>
+                                                </lightning-layout-item> -->
+
+                            <template for:each={cmp.childs} for:item="columnItem" for:index="indexCol">
+                              <lightning-layout-item key={columnItem.key} ondragover={DragOver} ondrop={Drop}
+                                data-indexcol={indexCol} data-indexlayout={indexLayout} data-indexscreen={indexScreen}
+                                class="slds-p-horizontal_small slds-p-vertical_x-small" style="
+                                  min-height: 10rem;
+                                  background-color: #ced4da;
+                                  border: var(--lwc-borderWidthThin, 1px) dotted
+                                    var(--lwc-colorGray11, rgb(62, 62, 60));
+                                " size={columnItem.columnSize}>
+                                <!-- border: var(--lwc-borderWidthThin, 1px) dotted
+                                    var(--lwc-colorGray11, rgb(62, 62, 60)); -->
+                                <template for:each={columnItem.childs} for:item="child" for:index="index">
+                                  <div key={child.key} onclick={selectCmp} data-cmptype={child.type} draggable="true"
+                                    ondrop={Drop} ondragstart={DragStart} ondragover={DragOver} ondragend={DragEnd}
+                                    data-name="cmpbuild" data-indexscreen={indexScreen} data-indexlayout={indexLayout}
+                                    data-indexcol={indexCol} data-index={index}>
+                                    <template if:true={child.isProductList}>
+                                      <table class="slds-table">
+                                        <colgroup>
+                                          <col width="70%" />
+                                          <col width="30%" />
+                                        </colgroup>
+                                        <thead>
+                                          <tr>
+                                            <th style="line-height: 24px; border-top-left-radius: 5px;">
+                                              Product Name
+                                            </th>
+                                            <th style="line-height: 24px;border-top-right-radius: 5px;">
+                                              Quantity
+                                            </th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          <template for:each={listProduct} for:item="product" for:index="productIndex">
+                                            <tr key={product.Id}>
+                                              <td>{product.Name}</td>
+                                              <td>
+                                                <lightning-input type="number" variant="label-hidden"></lightning-input>
+                                              </td>
+                                            </tr>
+                                          </template>
+                                        </tbody>
+                                      </table>
+                                    </template>
+
+                                    <!-- field -->
+                                    <template if:true={child.isField}>
+                                      <template if:true={child.isRequired}>
+                                        <lightning-input required type={child.type}
+                                          label={child.label}></lightning-input>
+                                      </template>
+                                      <template if:false={child.isRequired}>
+                                        <lightning-input type={child.type} label={child.label}></lightning-input>
+                                      </template>
+                                    </template>
+
+                                    <!-- Address field -->
+                                    <template if:true={child.isAddress}>
+                                      <template if:true={child.isRequired}>
+                                        <lightning-input-address address-label={child.label} street-label="Street"
+                                          city-label="City" country-label="Country" province-label="Province/State"
+                                          postal-code-label="PostalCode" street={street} city={city} country={country}
+                                          province={province} postal-code={postCode} required
+                                          field-level-help="Help Text for inputAddress field">
+                                        </lightning-input-address>
+                                      </template>
+                                      <template if:false={child.isRequired}>
+                                        <lightning-input-address address-label={child.label} street-label="Street"
+                                          city-label="City" country-label="Country" province-label="Province/State"
+                                          postal-code-label="PostalCode" street={street} city={city} country={country}
+                                          province={province} postal-code={postCode}
+                                          field-level-help="Help Text for inputAddress field">
+                                        </lightning-input-address>
+                                      </template>
+                                    </template>
+
+                                    <!-- input date -->
+                                    <template if:true={child.isInputDate}>
+                                      <template if:true={child.isRequired}>
+                                        <lightning-layout-item padding="">
+                                          <lightning-input type="date" date-style="medium" label={child.label} required
+                                            onchange={handleInputDateChange} value=""></lightning-input>
+                                        </lightning-layout-item>
+                                      </template>
+                                      <template if:false={child.isRequired}>
+                                        <lightning-layout-item padding="">
+                                          <lightning-input type="date" date-style="medium" label={child.label}
+                                            onchange={handleInputDateChange} value=""></lightning-input>
+                                        </lightning-layout-item>
+                                      </template>
+                                    </template>
+
+                                    <!-- PromotionCode Cmp -->
+                                    <template if:true={child.isPromotionCmp}>
+                                      <c-promotion-code-component form-id={formId}></c-promotion-code-component>
+                                    </template>
+
+                                    <!-- radio Field -->
+                                    <template if:true={child.isRadioGroup}>
+                                      <fieldset class="slds-form-element">
+                                        <legend class="slds-form-element__legend slds-form-element__label">
+                                          <div if:true={child.isRequired} style="display: inline">
+                                            <span style="color: red">*</span>
+                                          </div>
+                                          {child.label}
+                                        </legend>
+                                        <div class="slds-form-element__control">
+                                          <span class="slds-radio">
+                                            <input type="radio" id="radio-61" value="radio-61" name="default"
+                                              checked="" />
+                                            <label class="slds-radio__label" for="radio-61">
+                                              <span class="slds-radio_faux"></span>
+                                              <span class="slds-form-element__label">Yes</span>
+                                            </label>
+                                          </span>
+                                          <span class="slds-radio">
+                                            <input type="radio" id="radio-62" value="radio-62" name="default" />
+                                            <label class="slds-radio__label" for="radio-62">
+                                              <span class="slds-radio_faux"></span>
+                                              <span class="slds-form-element__label">No</span>
+                                            </label>
+                                          </span>
+                                        </div>
+                                      </fieldset>
+                                    </template>
+
+                                    <template if:true={child.isDisplayText}>
+                                      <lightning-input-rich-text style="cursor: auto" value={child.value}
+                                        onblur={changeDisplayText}>
+                                      </lightning-input-rich-text>
+                                    </template>
+
+                                    <!-- <lightning-textarea value={child.value} onchange={changeDisplayText} variant="label-hidden">
+                                                                    </lightning-textarea> -->
+
+                                    <!-- Picklist field -->
+                                    <template if:true={child.isPicklist}>
+                                      <template if:true={child.isRequired}>
+                                        <lightning-combobox required name="picklistData" label={child.label}
+                                          value={value} placeholder="Select Value" options={child.options}
+                                          onchange={handleChange}></lightning-combobox>
+                                      </template>
+                                      <template if:false={child.isRequired}>
+                                        <lightning-combobox name="picklistData" label={child.label} value={value}
+                                          placeholder="Select Value" options={child.options}
+                                          onchange={handleChange}></lightning-combobox>
+                                      </template>
+                                    </template>
+
+                                    <!-- checkbox -->
+                                    <template if:true={child.isCheckbox}>
+                                      <template if:true={child.isRequired}>
+                                        <lightning-checkbox-group required name="checkboxData" label={child.label}
+                                          value={child.value} options={child.options}
+                                          onchange={handleChange}></lightning-checkbox-group>
+                                        <div class="slds-form-element">
+                                          <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                              <input type="checkbox" name="options" id="checkbox-unique-id-81"
+                                                value="checkbox-unique-id-81" checked="" />
+                                              <label class="slds-checkbox__label" for="checkbox-unique-id-81">
+                                                <span class="slds-checkbox_faux"></span>
+                                                <span class="slds-form-element__label">Value Label 1</span>
+                                              </label>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </template>
+                                      <template if:false={child.isRequired}>
+                                        <lightning-checkbox-group name="checkboxData" label={child.label}
+                                          value={child.value} options={child.options}
+                                          onchange={handleChange}></lightning-checkbox-group>
+                                        <div class="slds-form-element">
+                                          <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                              <input type="checkbox" name="options" id="checkbox-unique-id-82"
+                                                value="checkbox-unique-id-81" checked="" />
+                                              <label class="slds-checkbox__label" for="checkbox-unique-id-81">
+                                                <span class="slds-checkbox_faux"></span>
+                                                <span class="slds-form-element__label">Value Label 1</span>
+                                              </label>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </template>
+                                    </template>
+
+                                    <!-- isConfirmationCheckbox -->
+                                    <template if:true={child.isConfirmationCheckbox}>
+                                      <template if:true={child.isRequired}>
+                                        <div class="slds-form-element">
+                                          <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                              <input type="checkbox" name="options" value="checkbox-unique-id-81"
+                                                checked="" />
+                                              <!-- <abbr class="slds-required" title="required">*</abbr> -->
+                                              <label class="slds-checkbox__label" for="checkbox-unique-id-81">
+                                                <span class="slds-checkbox_faux"></span>
+                                                <span class="slds-form-element__label">
+                                                  <span style="color: red">*</span>{child.label}</span>
+                                              </label>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </template>
+                                      <template if:false={child.isRequired}>
+                                        <div class="slds-form-element">
+                                          <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                              <input type="checkbox" name="options" value="checkbox-unique-id-81"
+                                                checked="" />
+                                              <label class="slds-checkbox__label" for="checkbox-unique-id-81">
+                                                <span class="slds-checkbox_faux"></span>
+                                                <span class="slds-form-element__label">{child.label}</span>
+                                              </label>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </template>
+                                    </template>
+
+                                    <!-- spacer -->
+                                    <template if:true={child.isSpacer}>
+                                      <div style="
+                                          padding: 1rem 0;
+                                          color: #868e96;
+                                          border: 1px solid #ced4da;
+                                          width: 100%;
+                                          text-align: center;
+                                        ">
+                                        Blank Space
+                                      </div>
+                                    </template>
+
+                                    <template if:true={child.isPaymentForm}>
+                                      <lightning-layout class="slds-var-p-vertical_small" multiple-rows>
+                                        <lightning-layout-item size="6">
+                                          <div class="slds-media__figure">
+                                            <template if:true={isVisa}><img src={url_Visa} alt="Visa"
+                                                class="image" /></template>
+                                            <template if:true={isMaster}><img src={url_Master} alt="Master"
+                                                class="image" /></template>
+                                            <template if:true={isAMEX}><img src={url_AmericanExpress}
+                                                alt="AmericanExpress" class="image" /></template>
+                                            <template if:true={isJCB}><img src={url_JCB} alt="JCB"
+                                                class="image" /></template>
+                                          </div>
+                                        </lightning-layout-item>
+
+                                        <lightning-layout-item size="6">
+                                          &nbsp;
+                                        </lightning-layout-item>
+
+                                        <lightning-layout-item size="6">
+                                          <lightning-input type="text" label="Credit card number" required
+                                            autocomplete="off"></lightning-input>
+                                        </lightning-layout-item>
+
+                                        <lightning-layout-item size="6">
+                                          &nbsp;
+                                        </lightning-layout-item>
+
+                                        <lightning-layout-item size="3" style="padding-right: 5px">
+                                          <lightning-input label="Expiry date" type="text" placeholder="MM" required
+                                            autocomplete="off"></lightning-input>
+                                        </lightning-layout-item>
+
+                                        <lightning-layout-item size="3" style="padding-left: 5px">
+                                          <lightning-input type="text" label="Year" placeholder="YYYY" required
+                                            autocomplete="off"></lightning-input>
+                                        </lightning-layout-item>
+
+                                        <lightning-layout-item size="6">
+                                          &nbsp;
+                                        </lightning-layout-item>
+
+                                        <lightning-layout-item size="6">
+                                          <lightning-input type="number" label="CVV" required
+                                            autocomplete="off"></lightning-input>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="6">
+                                          &nbsp;
+                                        </lightning-layout-item>
+
+                                        <lightning-layout-item size="6">
+                                          <lightning-input type="text" label="Name on card" required
+                                            autocomplete="off"></lightning-input>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="6">
+                                          &nbsp;
+                                        </lightning-layout-item>
+
+                                        <!-- <lightning-layout-item size="12" padding="around-small">
+                                                                            <div data-integrapay="Errors" class="slds-var-m-bottom_medium" style="font-size:medium; color: red"></div>
+                                                                            <div data-integrapay="Processing"></div>
+                                                                        </lightning-layout-item> -->
+                                      </lightning-layout>
+                                    </template>
+                                  </div>
+                                </template>
+                              </lightning-layout-item>
+                            </template>
+
+                            <!-- <lightning-layout-item
+                                                        size="6"
+                                                        class="slds-p-horizontal_small slds-p-vertical_x-small" 
+                                                        style="border: var(--lwc-borderWidthThin,1px) dotted var(--lwc-colorGray11,rgb(62, 62, 60));">
+                                                        
+                                                        <table class="slds-table">
+                                                            <colgroup>
+                                                                <col width="70%">
+                                                                <col width="30%">
+                                                            </colgroup>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Product Name</th>
+                                                                    <th>Quantity</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>New Blue Cap</td>
+                                                                    <td>
+                                                                        <lightning-input type="number" variant="label-hidden"></lightning-input>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>New Red T-Shirt</td>
+                                                                    <td>
+                                                                        <lightning-input type="number" variant="label-hidden"></lightning-input>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="6">
+                                                    &nbsp;
+                                                </lightning-layout-item> -->
+                          </lightning-layout>
+                        </div>
+                      </template>
+                    </template>
+                  </div>
+
+                  <!-- Disable all the button below the FormBuilder -->
+                  <!-- <template if:true={screen.isShowButton}> -->
+                  <!-- <template if:true={screen.isOnlyOne}>
+                                                                                        <lightning-layout-item>
+                                                                                            <lightning-button variant="brand" label="Process Payment"
+                                                                                                title="Process Payment" class="button-brand"></lightning-button>
+                                                                                        </lightning-layout-item>
+                                                                                    </template> -->
+
+                  <!-- If Form is only one page > Show the Submit button -->
+                  <!-- <div class="slds-p-around_x-small"
+                                        style="border: var(--lwc-borderWidthThin,1px) dotted var(--lwc-colorGray11,rgb(62, 62, 60));">
+                                        <lightning-layout multiple-rows>
+
+
+                                            <template if:true={screen.isOnlyOne}>
+                                                <lightning-layout-item>
+                                                    <lightning-button variant="brand" label="Process Payment"
+                                                        title="Process Payment" class="button-brand"></lightning-button>
+                                                </lightning-layout-item>
+                                            </template>
+
+                                            <template if:false={screen.isOnlyOne}>
+
+                                                <template if:false={screen.isFinalScreen}>
+
+                                                    <template if:true={screen.isMiddleScreen}>
+                                                        <lightning-layout-item class="slds-p-right_x-small">
+                                                            <lightning-button data-integrapay="BackButton"
+                                                                variant="brand-outline" label="Back" title="Back"
+                                                                class="button-outline"></lightning-button>
+                                                        </lightning-layout-item>
+                                                    </template>
+
+                                                    <lightning-layout-item>
+                                                        <lightning-button variant="brand" label="Next"
+                                                            class="button-brand"></lightning-button>
+                                                    </lightning-layout-item>
+
+                                                </template>
+
+                                                <template if:true={screen.isFinalScreen}>
+
+                                                    <lightning-layout-item class="slds-p-right_x-small">
+                                                        <lightning-button data-integrapay="BackButton"
+                                                            variant="brand-outline" label="Back" title="Back"
+                                                            class="button-outline"></lightning-button>
+                                                    </lightning-layout-item>
+
+                                                    <lightning-layout-item>
+                                                        <lightning-button data-integrapay="SubmitButton" variant="brand"
+                                                            label="Process Payment" title="Process Payment"
+                                                            class="button-brand"></lightning-button>
+                                                    </lightning-layout-item>
+                                                </template>
+                                            </template>
+
+                                        </lightning-layout>
+                                    </div> -->
+                </lightning-tab>
+              </template>
+
+              <!-- <lightning-tab icon-name="utility:new"></lightning-tab> -->
+              <template if:true={isUseThankYouPage}>
+                <lightning-tab label="Thanks Page" onactive={clearSelectedCmp}>
+                  <lightning-input-rich-text style="cursor: auto" value={thankYouPageContent}
+                    onblur={updateThankYouPage}>
+                  </lightning-input-rich-text>
+                </lightning-tab>
+              </template>
+            </lightning-tabset>
+
+            <!-- <template if:true={isShowDisclaimer}>
+                            <c-form-footer companyinfo={companyinfo}></c-form-footer>
+                        </template> -->
+          </div>
+        </div>
+        <div class="slds-col slds-size_3-of-12">
+          <div class="slds-box slds-var-m-around_xxx-small" style="border: none;">
+            <lightning-tabset>
+              <lightning-tab label="Details">
+                <!-- SELECT OBJECT -->
+                <lightning-input data-name="objectName" label="Core Object" value={objectValue}
+                  placeholder="Selected object" onchange={handleCoreObjectChange}></lightning-input>
+                <!-- <template if:true={isShowEditCmp}> -->
+                <lightning-input type="Text" data-detail="detailcmp" disabled data-name="labelUpdate"
+                  onblur={changeValueOnCmp} label="Field Label"
+                  field-level-help="Enter label or the content of confirmation check field here.">
+                </lightning-input>
+                <!-- <lightning-input type="Text" data-detail="detailcmp" disabled data-name="mappingUpdate"
+                  onblur={changeValueOnCmp} label="Field Mapping"></lightning-input> -->
+
+                <!-- Select field mapping with combobox -->
+                <lightning-combobox data-name="fieldMapping" data-detail="detailcmp" label="Field Mapping"
+                  field-level-help="To map a field and the API name of the object, and DO NOT use field mapping for Address composite field"
+                  value={fieldMappingAPIName} placeholder="Selected field" options={fieldsMappingOptions}
+                  onchange={changeValueOnCmp} disabled></lightning-combobox>
+
+                <!-- <div class="slds-form-element__help">{helpTextMapping}</div> -->
+                <lightning-input type="Text" data-detail="detailcmp" data-name="defaultValue"
+                  onblur={changeDefaultValueOnCmp} label="Default Value"></lightning-input>
+                <div class="slds-p-vertical_x-small">
+                  <h2 class="header" style="padding: 5px 0">
+                    <Strong>Field Settings</Strong>
+                  </h2>
+                  <lightning-input data-detail="detailcmp" disabled data-name="isrequiredcmp" type="checkbox"
+                    onchange={changeCheckBoxCmp} label="Is field required?"></lightning-input>
+                  <lightning-input data-detail="detailcmp" disabled data-name="ishiddenfieldcmp" type="checkbox"
+                    onchange={changeCheckBoxCmp} label="Is field hidden?"></lightning-input>
+                  <lightning-input data-detail="detailcmp" disabled data-name="isyesnooption" type="checkbox"
+                    onchange={changeCheckBoxCmp} label="Choose one in multiple options?"></lightning-input>
+                  <lightning-input data-detail="detailcmp" disabled data-name="isreceiptemailcmp" type="checkbox"
+                    onchange={changeCheckBoxCmp} label="Send receipt to this email."
+                    field-level-help="Select email field and checked this checkbox."></lightning-input>
+                  <!-- Add field to query -->
+                  <lightning-input data-detail="detailcmp" disabled data-name="doesitaddtoquery" type="checkbox"
+                    onchange={changeCheckBoxCmp} label="Does it add to Contact Query?"
+                    field-level-help="Adding this field to query existing contact (Purpose of this checkbox is combine with email to find a unique contact), only support one field each form."></lightning-input>
+                </div>
+
+                <div class="slds-text-align_right">
+                  <lightning-button-icon disabled data-detail="detailcmp" onclick={removeComponent}
+                    icon-name="utility:delete" title="Remove Component"></lightning-button-icon>
+                </div>
+                <!-- </template> -->
+              </lightning-tab>
+              <lightning-tab label="Settings">
+                <lightning-accordion onsectiontoggle={handleSectionToggle} active-section-name={activeSettingSections}>
+                  <lightning-accordion-section class="slds-is-open" name="BrandSetup" label="Background">
+                    <lightning-input onchange={changeBrandColor} type="color" value={brandColor} name="input-color"
+                      label="Background Color"></lightning-input>
+                  </lightning-accordion-section>
+
+                  <lightning-accordion-section name="ProductSetup" label="Products">
+                    <!-- <div class="slds-grid slds-gutters">
+                      <div class="slds-col slds-size_1-of-1">
+                        <lightning-input data-detail="settingproduct" type="checkbox" value={isMaxQEqualto1}
+                          checked={isMaxQEqualto1} onchange={handleMaxQuantity} label="Max quantity equals to one."
+                          field-level-help="Check this box if you want to maximise the quantity of each product equal to one."></lightning-input>
+                      </div>
+                    </div> -->
+                    <div class="slds-grid slds-gutters">
+                      <div class="slds-col slds-size_1-of-1">
+                        <lightning-combobox label="Currency Code" name="currencycode" value={currencyCode}
+                          options={currencyCodeOption} onchange={handleChangeCurrencyCode}>
+                        </lightning-combobox>
+                      </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                      <div class="slds-col slds-size_1-of-1">
+                        <lightning-combobox name="pricebookcombobox" label="Price Book" value={priceBookId}
+                          placeholder="Select Price Book" onchange={changePriceBook}
+                          options={pricebookOptions}></lightning-combobox>
+                      </div>
+                    </div>
+                    <br />
+                    <div class="slds-box">
+                      <div class="slds-grid slds-gutters slds-p-bottom_x-small">
+                        <div class="slds-col slds-size_9-of-12">
+                          <lightning-record-edit-form object-api-name={objectAPIName}>
+                            <lightning-input-field data-product="productLookup" variant="label-hidden"
+                              field-name={fieldName} value={productLookupId} onchange={handleProductLookup}>
+                            </lightning-input-field>
+                          </lightning-record-edit-form>
+                        </div>
+                        <div class="slds-col slds-size_3-of-12 slds-text-align_right">
+                          <lightning-button variant="brand-outline" label="Add" title="Add"
+                            onclick={addProduct}></lightning-button>
+                        </div>
+                      </div>
+
+                      <table class="slds-table">
+                        <colgroup>
+                          <col width="85%" />
+                          <col width="15%" />
+                        </colgroup>
+                        <thead style="border-top-left-radius: 5px;">
+                          <tr>
+                            <th>Product Name</th>
+                            <th>&nbsp;</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <template for:each={listProduct} for:item="product" for:index="productIndex">
+                            <tr key={product.Id}>
+                              <td>{product.Name}</td>
+                              <td>
+                                <lightning-button-icon onclick={removeProduct} data-index={productIndex} size="small"
+                                  icon-name="utility:delete" title="Delete"></lightning-button-icon>
+                              </td>
+                            </tr>
+                          </template>
+                        </tbody>
+                      </table>
+                    </div>
+                  </lightning-accordion-section>
+
+                  <lightning-accordion-section name="Fomulas" label="Fomulas">
+                    <template for:each={fomularCanUse} for:item="fl">
+                      <p key={fl.name} style="font-size: 15px">
+                        {fl.description} : {fl.mapping}
+                      </p>
+                    </template>
+                  </lightning-accordion-section>
+
+                  <lightning-accordion-section name="GeneralSetup" label="General">
+                    <!-- <div>Link Opportunity To:</div> -->
+                    <!-- <lightning-input type="checkbox" onchange={checkboxShowDisclaimer} checked={isShowDisclaimer} label="Show Disclaimer"></lightning-input> -->
+                    <lightning-input type="checkbox" onchange={checkboxThanksPage} checked={isUseThankYouPage}
+                      label="Use Thank You Page"></lightning-input>
+                  </lightning-accordion-section>
+                </lightning-accordion>
+
+                <!-- <lightning-combobox
+                                    name="progress"
+                                    label="Duplicate Check"
+                                    value={duplicateSelected}
+                                    options={duplicateOptions}
+                                    onchange={changeDuplicateOption} ></lightning-combobox> -->
+                <!-- <lightning-layout multiple-rows class="slds-p-top_small">
+
+                                    <lightning-layout-item size="12">
+                                        <div class="slds-form-element__label">Opportunity Settings:</div>
+                                    </lightning-layout-item>
+
+                                    <lightning-layout-item size="4" class="slds-p-right_x-small">
+                                        <lightning-input label="Link To Object" data-integrapay="LinkObject" type="text" placeholder="\{!Contact}"></lightning-input>
+                                    </lightning-layout-item>
+            
+                                    <lightning-layout-item size="8" >
+                                        <lightning-input label="Using Opportunity Field" data-integrapay="LinkField" type="text" placeholder="\{!Opportunity.Contact__c}"></lightning-input>
+                                    </lightning-layout-item>
+
+                                </lightning-layout> -->
+              </lightning-tab>
+            </lightning-tabset>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <p slot="footer">© 2022 Cross Cloud Partners</p> -->
+  </lightning-card>
+</template>

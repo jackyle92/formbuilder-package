@@ -1,0 +1,19 @@
+<template>
+  <div class="slds-form-element slds-grid">
+    <label class="slds-col slds-size_3-of-12 slds-var-m-around_small slds-form-element__label" for="text-input-id-39"
+      id="inline-text-label"><b>Promotion Code</b></label>
+    <div class="slds-col slds-size_4-of-12 slds-var-m-around_small slds-form-element__control">
+      <input type="text" id="text-input-id-39" data-name="input-promo-code" placeholder="Code text …"
+        aria-describedby="error-message-id-40" class="slds-input" value={promotionValue}
+        onchange={handlePromoInputChange} aria-invalid="true" />
+      <div if:true={errorCode}>
+        <p style="font-size: 12px; color:#c23934">This code was used or unavailabe.</p>
+      </div>
+    </div>
+    <div class="slds-col slds-size_5-of-12 slds-var-m-around_small">
+      <button class="slds-button slds-button_outline-brand" onclick={handleApplyPromoCode}>
+        <label>Apply</label>
+      </button>
+    </div>
+  </div>
+</template>

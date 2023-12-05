@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>55.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default, lightning__RecordPage">
+            <property name="formid" type="String" label="Form Id" description="Id of Form" />
+            <property name="backgroundColor" default="#ced4da" type="String" label="Background Color"/>
+            <property name="logoName" type="String" label="Logo"/>
+            <property name="textColor" type="String" label="Text Color" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

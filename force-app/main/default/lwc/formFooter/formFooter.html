@@ -1,0 +1,91 @@
+<template>
+  <div
+    class="slds-var-p-horizontal_medium slds-var-m-top_large slds-align_absolute-center"
+  >
+    <template if:true={companyinfo.Company_Name__c}>
+      <div>@ {currentYear} {companyinfo.Company_Name__c}</div>
+    </template>
+  </div>
+  <div class="slds-align_absolute-center">
+    <ul>
+      <li class="slds-var-m-left_x-small">Follow us on</li>
+      <li class="slds-var-m-left_x-small">
+        <a href={companyinfo.Facebook__c} target="_blank">
+          <i class="fab fa-facebook"></i
+        ></a>
+      </li>
+      <li class="slds-var-m-left_x-small">
+        <a href={companyinfo.Twitter__c} target="_blank">
+          <i class="fab fa-twitter"></i
+        ></a>
+      </li>
+      <li class="slds-var-m-left_x-small">
+        <a href={companyinfo.Instagram__c} target="_blank">
+          <i class="fab fa-instagram"></i
+        ></a>
+      </li>
+    </ul>
+  </div>
+  <template if:true={isMobile}>
+    <div class="slds-align_absolute-center">
+      <ul>
+        <li class="slds-var-m-left_x-small">
+          {companyinfo.Physical_Address__c}
+        </li>
+      </ul>
+    </div>
+    <div class="slds-align_absolute-center">
+      <ul>
+        <li class="slds-var-m-left_x-small">
+          <i class="fas fa-phone-alt"></i
+          ><lightning-formatted-phone
+            value={companyinfo.Phone__c}
+          ></lightning-formatted-phone>
+        </li>
+        <li class="slds-var-m-left_x-small">
+          <i class="fas fa-envelope"></i
+          ><lightning-formatted-email
+            value={companyinfo.Email__c}
+            hide-icon
+          ></lightning-formatted-email>
+        </li>
+      </ul>
+    </div>
+    <div class="slds-align_absolute-center slds-var-m-bottom_large">
+      <ul>
+        <li class="slds-var-m-left_x-small">
+          <a href={companyinfo.Terms_Conditions__c} target="_blank"
+            >Terms & Conditions</a
+          >
+        </li>
+      </ul>
+    </div>
+  </template>
+  <template if:false={isMobile}>
+    <div class="slds-align_absolute-center slds-var-m-bottom_large">
+      <ul>
+        <li class="slds-var-m-left_x-small">
+          {companyinfo.Physical_Address__c}
+        </li>
+        <li class="slds-var-m-left_x-small">
+          <i class="fas fa-phone-alt"></i
+          ><lightning-formatted-phone
+            value={companyinfo.Phone__c}
+          ></lightning-formatted-phone>
+        </li>
+        <li class="slds-var-m-left_x-small">
+          <i class="fas fa-envelope"></i
+          ><lightning-formatted-email
+            value={companyinfo.Email__c}
+            hide-icon
+          ></lightning-formatted-email>
+        </li>
+        <li class="slds-var-m-left_x-small">
+          <a href={companyinfo.Terms_Conditions__c} target="_blank"
+            >Terms & Conditions</a
+          >
+        </li>
+      </ul>
+    </div>
+  </template>
+</template>

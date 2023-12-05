@@ -1,0 +1,29 @@
+<template>
+  <div if:true={isActive}>
+    <div class="slds-box slds-box_small slds-text-align_center" style="background-color:green; color: white;">
+      <p>{message}</p>
+    </div>
+  </div>
+  <div if:true={isShowingAlert}>
+    <div class="slds-box slds-box_small slds-text-align_center" style="background-color:#ffec99; color: #212529;">
+      <p>{message}
+      </p>
+    </div>
+  </div>
+  <div if:true={isLicenseError}>
+    <div class="slds-notify_container slds-is-relative">
+      <div class="slds-notify slds-notify_toast slds-theme_error" role="status">
+        <span class="slds-assistive-text">error</span>
+        <span class="slds-icon_container slds-icon-utility-error slds-m-right_small slds-no-flex slds-align-top"
+          title="Description of icon when needed">
+        </span>
+        <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top"
+          title="Description of icon when needed"></span>
+        <div class="slds-notify slds-text-align_center">
+          <h2 class="slds-text-heading_small ">{message}
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

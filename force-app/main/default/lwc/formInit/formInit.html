@@ -1,0 +1,673 @@
+<template>
+  <div lwc:dom="manual"></div>
+  <lightning-spinner if:true={showSpinner} variant="brand"></lightning-spinner>
+
+  <template if:false={isHaveLicense}>
+    <lightning-formatted-text style="color: #c23934" value="Do not have license."></lightning-formatted-text>
+  </template>
+
+  <template if:true={isHaveLicense}>
+    <template for:each={listScreen} for:item="screen" for:index="indexScreen">
+      <template if:true={screen.isShow}>
+        <div key={screen.key} class="form-container">
+          <!-- <div class="slds-var-p-around_medium brand-box">
+            <p class="slds-var-p-horizontal_medium" style="font-size: medium; color: white">
+              {screen.label}
+            </p>
+          </div> -->
+          <template if:true={hasLogo}>
+            <div class="logo" style="
+                display: grid;
+                grid-template-columns: auto;
+                justify-content: center;
+                padding-bottom: 25px;
+              ">
+              <!-- <img src={imgLogo} alt="Logo" style="width: 150px" /> -->
+            </div>
+          </template>
+          <div class="slds-grid">
+            <div class="slds-col slds-size_1-of-1 form-name slds-align-content-center" style="
+              display: flex;
+              font-size: large;
+              font-weight: bolder;
+              justify-content: center;
+              font-size: xx-large;
+              margin-bottom: 20px;
+              text-align:center;
+            ">
+              {screen.label}
+            </div>
+          </div>
+          <div class="" style={backgroundStyle}>
+            <div data-name="screen">
+              <template if:true={screen.childs}>
+                <template for:each={screen.childs} for:item="cmp" for:index="indexLayout">
+                  <div key={cmp.key} data-name="layout" data-indexlayout={indexLayout} data-indexscreen={indexScreen}>
+                    <lightning-layout multiple-rows>
+                      <template for:each={cmp.childs} for:item="columnItem" for:index="indexCol">
+                        <lightning-layout-item key={columnItem.key} data-indexcol={indexCol}
+                          data-indexlayout={indexLayout} data-indexscreen={indexScreen}
+                          class="slds-p-horizontal_none slds-var-p-vertical_x-small" size={columnItem.columnSize}>
+                          <template for:each={columnItem.childs} for:item="child" for:index="index">
+                            <div key={child.key} data-name="cmpbuild" data-indexscreen={indexScreen}
+                              data-indexlayout={indexLayout} data-indexcol={indexCol} data-index={index}>
+                              <!-- text field -->
+                              <template if:true={child.isField}>
+                                <template if:false={child.isHidden}>
+                                  <template if:true={child.isRequired}>
+                                    <lightning-input required onchange={updateDataOnFields} value={child.value}
+                                      type={child.type} label={child.label}></lightning-input>
+                                  </template>
+                                  <template if:false={child.isRequired}>
+                                    <lightning-input onchange={updateDataOnFields} value={child.value} type={child.type}
+                                      label={child.label}></lightning-input>
+                                  </template>
+                                </template>
+                              </template>
+                              <!-- Picklist field -->
+                              <template if:true={child.isPicklist}>
+                                <template if:true={child.isRequired}>
+                                  <lightning-combobox required name="picklistData" aria-selected="true"
+                                    label={child.label} value={child.value} placeholder="--None--"
+                                    options={child.listOptions} onchange={handleSelect}></lightning-combobox>
+                                  <span class={child.requiredDisplayTooltip} style={tooltipStype}>Complete this
+                                    field.</span>
+                                </template>
+                                <template if:false={child.isRequired}>
+                                  <lightning-combobox aria-selected="true" name="picklistData" label={child.label}
+                                    value={child.value} placeholder="--None--" options={child.listOptions}
+                                    onchange={handleSelect}></lightning-combobox>
+                                </template>
+                              </template>
+
+                              <!-- Address -->
+                              <template if:true={child.isAddress}>
+                                <template if:false={child.isRequired}>
+                                  <div class="slds-form-element">
+                                    <lightning-input-address address-label={child.label} street-label="Street"
+                                      city-label="City" country-label="Country" province-label="Province/State"
+                                      postal-code-label="PostalCode" street={street} city={city} country={country}
+                                      province={province} postal-code={postCode}
+                                      field-level-help="Address Coposit Field" onchange={handleAddressChange}>
+                                    </lightning-input-address>
+                                  </div>
+                                </template>
+                                <template if:true={child.isRequired}>
+                                  <div class="slds-form-element">
+                                    <lightning-input-address address-label={child.label} street-label="Street"
+                                      city-label="City" country-label="Country" province-label="Province/State"
+                                      postal-code-label="PostalCode" street={street} city={city} country={country}
+                                      province={province} postal-code={postCode} required
+                                      field-level-help="Address Coposit Field" onchange={handleAddressChange}>
+                                    </lightning-input-address>
+                                    <span class={child.requiredDisplayTooltip} style={tooltipStype}>Complete this
+                                      field.</span>
+                                  </div>
+                                </template>
+                              </template>
+
+                              <!-- confirmation box -->
+                              <template if:true={child.isConfirmationCheckbox}>
+                                <template if:true={child.isRequired}>
+                                  <div class="slds-form-element">
+                                    <lightning-input class="textCheckbox slds-col" style="display: inline-block"
+                                      type="checkbox" variant="label-hidden" onchange={handleConfirmChange}>
+                                    </lightning-input>
+                                    <span class="slds-col" style="color: #343a40"><Strong
+                                        style="color: red">*</Strong>{child.label}</span>
+                                  </div>
+                                  <span class={child.requiredDisplayTooltip} style={tooltipStype}>Complete this
+                                    field.</span>
+                                </template>
+                                <template if:false={child.isRequired}>
+                                  <div class="slds-form-element">
+                                    <lightning-input class="textCheckbox slds-col" style="display: inline-block"
+                                      type="checkbox" variant="label-hidden" onchange={handleConfirmChange}>
+                                    </lightning-input>
+                                    <span class="slds-col" style="color: #343a40">{child.label}</span>
+                                  </div>
+                                </template>
+                              </template>
+
+                              <!-- spacer -->
+                              <template if:true={child.isSpacer}>
+                                <div style="padding: 1.3rem 0; width: 100%"></div>
+                              </template>
+
+                              <!-- input date -->
+                              <template if:true={child.isInputDate}>
+                                <template if:true={child.isRequired}>
+                                  <lightning-layout-item padding="" class="slds-form-element">
+                                    <lightning-input type="date" date-style="medium" label={child.label} required
+                                      onchange={handleInputDateChange} value={child.value}></lightning-input>
+                                  </lightning-layout-item>
+                                </template>
+                                <template if:false={child.isRequired}>
+                                  <lightning-layout-item class="slds-form-element">
+                                    <lightning-input type="date" date-style="medium" label={child.label}
+                                      onchange={handleInputDateChange} value={child.value}></lightning-input>
+                                  </lightning-layout-item>
+                                </template>
+                              </template>
+
+                              <!-- Radio group -->
+                              <template if:true={child.isRadioGroup}>
+                                <template if:false={child.isRequired}>
+                                  <lightning-radio-group class="radio-group" name="radioGroup" label={child.label}
+                                    options={child.listOptions} onchange={handleRadioChange} type="radio"
+                                    value={value}></lightning-radio-group>
+                                </template>
+                                <template if:true={child.isRequired}>
+                                  <lightning-radio-group class="radio-group" name="radioGroup" label={child.label}
+                                    options={child.listOptions} onchange={handleRadioChange} required type="radio"
+                                    value={value}></lightning-radio-group>
+                                  <span class={child.requiredDisplayTooltip} style={tooltipStype}>Complete this
+                                    field.</span>
+                                </template>
+                              </template>
+                              <!-- Multipicklist but choose one option -->
+                              <template if:true={child.isYesNoOption}>
+                                <template if:false={child.isRequired}>
+                                  <lightning-radio-group class="radio-group" name="radioGroup" label={child.label}
+                                    options={child.listOptions} onchange={handleRadioChange} value={value}
+                                    type="radio"></lightning-radio-group>
+                                </template>
+                                <template if:true={child.isRequired}>
+                                  <lightning-radio-group class="radio-group" name="radioGroup" label={child.label}
+                                    options={child.listOptions} onchange={handleRadioChange} value={value} required
+                                    type="radio"></lightning-radio-group>
+                                  <span class={child.requiredDisplayTooltip} style={tooltipStype}>Complete this
+                                    field.</span>
+                                </template>
+                              </template>
+
+                              <!-- Checkbox field (multipicklist) -->
+                              <template if:false={child.isYesNoOption}>
+                                <template if:true={child.isCheckbox}>
+                                  <template if:true={child.isRequired}>
+                                    <lightning-checkbox-group class="multiple-checkbox" name="Checkbox Group"
+                                      label={child.label} options={child.listOptions} value={} required
+                                      onchange={handleChange}></lightning-checkbox-group>
+                                    <span class={child.requiredDisplayTooltip} style={tooltipStype}>Complete this
+                                      field.</span>
+                                  </template>
+                                  <template if:false={child.isRequired}>
+                                    <lightning-checkbox-group class="multiple-checkbox" name="Checkbox Group"
+                                      label={child.label} options={child.listOptions} value={}
+                                      onchange={handleChange}></lightning-checkbox-group>
+                                  </template>
+                                </template>
+                              </template>
+
+                              <template if:true={child.isDisplayText}>
+                                <lightning-formatted-rich-text
+                                  value={child.valuereplaced}></lightning-formatted-rich-text>
+                              </template>
+
+                              <template if:true={child.isProductList}>
+                                <table aria-multiselectable="true"
+                                  class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols"
+                                  style="border: solid 2px #ced4da;border-radius: 7px;" role="grid"
+                                  aria-label="Example advanced table of Opportunities in actionable mode">
+                                  <colgroup>
+                                    <col width="40%" />
+                                    <col width="35%" />
+                                    <col width="25%" />
+                                  </colgroup>
+                                  <thead>
+                                    <tr class="slds-line-height_reset">
+                                      <th class="slds-text-align_right slds-cell_action-mode" scope="col"
+                                        style="line-height: 35px;border-top-left-radius: 5px;">
+                                        <div class="slds-text-align_left slds-has-flexi-truncate"
+                                          style="background-color: #e9ecef; border-top-left-radius: 5px;">
+                                          <span class="slds-var-p-left_small slds-truncate" title="Product Name">Product
+                                            Name</span>
+                                        </div>
+                                      </th>
+                                      <th aria-label="Name" aria-sort="none"
+                                        class="slds-is-resizable slds-is-sortable slds-cell_action-mode slds-text-align_center"
+                                        scope="col" style="background-color: #e9ecef;">
+                                        <div class="slds-has-flexi-truncate" style="background-color: #e9ecef;">
+                                          <span class="slds-truncate" title="Product Name">Quantity</span>
+                                        </div>
+                                      </th>
+                                      <th aria-label="Unit Price" aria-sort="none"
+                                        class="slds-is-resizable slds-is-sortable slds-cell_action-mode"
+                                        style="border: none;line-height: 35px;border-top-right-radius: 5px;"
+                                        scope="col">
+                                        <div
+                                          class="slds-var-p-right_small slds-text-align_right slds-has-flexi-truncate"
+                                          style="background-color: #e9ecef; border-top-right-radius: 5px;">
+                                          <span class="slds-truncate" title="Product Name">Unit
+                                            Price</span>
+                                        </div>
+                                      </th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <template for:each={paymentSetting.productList} for:item="product"
+                                      for:index="productIndex">
+                                      <tr key={product.Id}>
+                                        <td>
+                                          <!-- <div class="slds-truncate slds-cell-wrap"> -->
+                                          <div class="slds-cell-wrap">
+                                            {product.Name}
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <div class="slds-form-element slds-text-align_center">
+                                            <div class="slds-form-element__control">
+                                              <!-- <input data-productindex={productIndex} onchange={updateQuantity}
+                                                  type="number" value={product.ccpformbuilder__value__c}
+                                                  class="slds-input slds-text-align_right slds-p-around_none" min="0" /> -->
+                                              <c-quantity-counter-elm data-productindex={productIndex}
+                                                onupdatequantity={updateQuantity}></c-quantity-counter-elm>
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td class="slds-text-align_right">
+                                          <lightning-formatted-number value={product.ccpformbuilder__unit_price__c}
+                                            format-style="currency" currency-code={currencyCode}
+                                            currency-display-as="code"
+                                            maximum-fraction-digits="1"></lightning-formatted-number>
+                                        </td>
+                                      </tr>
+                                    </template>
+                                    <template if:true={discountString}>
+                                      <tr class="slds-border_top">
+                                        <th colspan="2" class="slds-text-align_right" style="
+                                                                                    color: #696969;
+                                                                                    font-weight: 700;
+                                                                                  ">
+                                          Sub Total
+                                        </th>
+                                        <th class="slds-text-align_right">
+                                          <lightning-formatted-number value={subAmount} format-style="currency"
+                                            currency-code={currencyCode}
+                                            currency-display-as="code"></lightning-formatted-number>
+                                        </th>
+                                      </tr>
+                                      <tr class="slds-border_top">
+                                        <th colspan="2" class="slds-text-align_right"
+                                          style="
+                                                                                                                          color: #696969;
+                                                                                                                          font-weight: 700;
+                                                                                                                        ">
+                                          Discount
+                                        </th>
+                                        <th class="slds-text-align_right">
+                                          {discountString}
+                                        </th>
+                                      </tr>
+                                    </template>
+                                    <tr class="slds-border_top">
+                                      <th colspan="2" class="slds-text-align_right" style="
+                                                                                  color: #696969;
+                                                                                  font-weight: 700;
+                                                                                ">
+                                        Total
+                                      </th>
+                                      <th class="slds-text-align_right">
+                                        <lightning-formatted-number value={sumAmountValue} format-style="currency"
+                                          currency-code={currencyCode}
+                                          currency-display-as="code"></lightning-formatted-number>
+                                      </th>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </template>
+
+                              <!-- <div if:true={isMaxQEqualto1}>
+                                <div if:true={child.isProductList}>
+                                  <table aria-multiselectable="true"
+                                    class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols"
+                                    style="
+                                      border: solid 2px #ced4da;
+                                      border-radius: 7px;
+                                    " role="grid"
+                                    aria-label="Example advanced table of Opportunities in actionable mode">
+                                    <thead>
+                                      <tr class="slds-line-height_reset">
+                                        <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="
+                                            width: 3.25rem;
+                                            line-height: 24px;
+                                            border-top-left-radius: 5px;
+                                          ">
+                                          <span id="column-group-header" class="slds-assistive-text">Choose a row</span>
+                                          <div class="slds-th__action slds-th__action_form"></div>
+                                        </th>
+                                        <th aria-label="Name" aria-sort="none"
+                                          class="slds-is-resizable slds-is-sortable slds-cell_action-mode" scope="col">
+                                          <div class="slds-text-align_left slds-has-flexi-truncate">
+                                            <span class="slds-var-p-left_small slds-truncate"
+                                              title="Product Name">Product
+                                              Name</span>
+                                          </div>
+                                        </th>
+                                        <th aria-label="Unit Price" aria-sort="none"
+                                          class="slds-is-resizable slds-is-sortable slds-cell_action-mode" style="
+                                            border: none;
+                                            line-height: 24px;
+                                            border-top-right-radius: 5px;
+                                          " scope="col">
+                                          <div
+                                            class="slds-var-p-right_small slds-text-align_right slds-has-flexi-truncate">
+                                            <span class="slds-truncate" title="Unit Price">Unit Price</span>
+                                          </div>
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <template for:each={paymentSetting.productList} for:item="product"
+                                        for:index="productIndex">
+                                        <tr key={product.Id}>
+                                          <td class="slds-text-align_right slds-cell_action-mode" role="gridcell">
+                                            <div class="slds-checkbox">
+                                              <lightning-input data-productindex={productIndex}
+                                                class="textCheckbox slds-checkbox__label slds-col" label="Label" value
+                                                style="display: inline-block" type="checkbox" variant="label-hidden"
+                                                onchange={handlePickProduct}></lightning-input>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="slds-truncate">
+                                              {product.Name}
+                                            </div>
+                                          </td>
+                                          <td class="slds-text-align_right">
+                                            <lightning-formatted-number value={product.ccpformbuilder__unit_price__c}
+                                              format-style="currency" currency-code={currencyCode}
+                                              currency-display-as="code"></lightning-formatted-number>
+                                          </td>
+                                        </tr>
+                                      </template>
+                                      <tr class="slds-border_top">
+                                        <th colspan="2" class="slds-text-align_right" style="
+                                            color: #696969;
+                                            font-weight: 700;
+                                          ">
+                                          Total
+                                        </th>
+                                        <th class="slds-text-align_right">
+                                          <lightning-formatted-number value={sumAmountValue} format-style="currency"
+                                            currency-code={currencyCode}
+                                            currency-display-as="code"></lightning-formatted-number>
+                                        </th>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div> -->
+
+                              <template if:true={child.isPromotionCmp}>
+                                <c-promotion-code-component form-id={formid}
+                                  onapplycode={handlePromotionCode}></c-promotion-code-component>
+                              </template>
+
+                              <template if:true={child.isPaymentForm}>
+                                <template if:false={totalAmountEqualtoZero}>
+                                  <lightning-layout class="slds-var-p-vertical_small slds-grid slds-wrap" multiple-rows>
+                                    <div
+                                      class="slds-grid slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_5-of-12">
+                                      <div class="slds-col">
+                                        <lightning-layout-item size="12"
+                                          class="slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                                          <div class="slds-media__figure">
+                                            <template if:true={isVisa}><img src={url_Visa} alt="Visa"
+                                                class="image" /></template>
+                                            <template if:true={isMaster}><img src={url_Master} alt="Master"
+                                                class="image" /></template>
+                                            <template if:true={isAMEX}><img src={url_AmericanExpress}
+                                                alt="AmericanExpress" class="image" /></template>
+                                            <template if:true={isJCB}><img src={url_JCB} alt="JCB"
+                                                class="image" /></template>
+                                          </div>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="12"
+                                          class="slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                                          <lightning-input data-integrapay="CardNumber"
+                                            onchange={handleCardNumberChange} type="text" label="Credit Card Number"
+                                            required autocomplete="off"></lightning-input>
+                                        </lightning-layout-item>
+
+                                        <div class="slds-grid slds-col">
+                                          <lightning-layout-item size="6"
+                                            class="slds-col slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12"
+                                            style="padding-right: 5px">
+                                            <lightning-input data-integrapay="CardExpiryMonth" label="Expiry Month"
+                                              type="text" placeholder="MM" required
+                                              autocomplete="off"></lightning-input>
+                                          </lightning-layout-item>
+
+                                          <lightning-layout-item size=""
+                                            class="slds-col slds-small-size_6-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12"
+                                            style="padding-left: 5px">
+                                            <lightning-input data-integrapay="CardExpiryYear" label="Year" type="text"
+                                              placeholder="YYYY" required autocomplete="off"></lightning-input>
+                                          </lightning-layout-item>
+                                        </div>
+                                        <lightning-layout-item size="12"
+                                          class="slds-small-size_6-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                                          <lightning-input data-integrapay="CardCcv" type="number" label="CVV" required
+                                            autocomplete="off"></lightning-input>
+                                        </lightning-layout-item>
+
+                                        <lightning-layout-item size="12"
+                                          class="slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                                          <lightning-input data-integrapay="CardName" type="text" label="Name on Card"
+                                            required autocomplete="off"></lightning-input>
+                                        </lightning-layout-item>
+                                      </div>
+                                    </div>
+                                    <lightning-layout-item size="12" padding="around-small"
+                                      class="slds-hidden slds-size_1-of-2">
+                                      <div data-integrapay="Errors" class="slds-var-m-bottom_medium"
+                                        style="font-size: medium; color: red"></div>
+                                      <div data-integrapay="Processing"></div>
+                                    </lightning-layout-item>
+                                  </lightning-layout>
+                                  <c-confirm-charge-amount-cmp total-amount={totalAmountIncludeFee}
+                                    sum-amount-value={sumAmountValue}
+                                    merchant-fee={chargeFee}></c-confirm-charge-amount-cmp>
+                                </template>
+                              </template>
+                            </div>
+                          </template>
+                        </lightning-layout-item>
+                      </template>
+                    </lightning-layout>
+                  </div>
+                </template>
+              </template>
+            </div>
+          </div>
+
+
+
+          <div if:true={isSubmitError}>
+            <div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
+              <span class="slds-assistive-text">warning</span>
+              <span class="slds-icon_container slds-icon-utility-warning slds-m-right_x-small"
+                title="Description of icon when needed">
+                <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                  <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#warning"></use>
+                </svg>
+              </span>
+              <h2>
+                There is an error occurred while processing this form.
+                <ul class="slds-list_dotted">
+                  <li>
+                    Please make sure all the required fields have been filled
+                    out.
+                  </li>
+                </ul>
+              </h2>
+              <div class="slds-notify__close">
+                <button class="slds-button slds-button_icon slds-button_icon-small" title="Close"
+                  onclick={handleErrorClose}>
+                  <svg class="slds-button__icon" aria-hidden="true">
+                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                  </svg>
+                  <span class="slds-assistive-text">Close</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div if:true={isPaymentError}>
+            <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+              <span class="slds-assistive-text">error</span>
+              <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small"
+                title="Description of icon when needed">
+                <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                  <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#error"></use>
+                </svg>
+              </span>
+              <h2>
+                Your payment is not completed, Please try again!
+                <!-- <a href="#">More Information</a> -->
+              </h2>
+              <div class="slds-notify__close">
+                <button class="slds-button slds-button_icon slds-button_icon-small slds-button_icon-inverse"
+                  title="Close" onclick={handleErrorClose}>
+                  <svg class="slds-button__icon" aria-hidden="true">
+                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                  </svg>
+                  <span class="slds-assistive-text">Close</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- payment required in form -->
+          <div if:true={errorPaymentRequired}>
+            <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+              <span class="slds-assistive-text">error</span>
+              <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small"
+                title="Description of icon when needed">
+                <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                  <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#error"></use>
+                </svg>
+              </span>
+              <h2>
+                Please, purchase at least one product to proceed with the
+                payment to complete the form.
+              </h2>
+              <div class="slds-notify__close">
+                <button class="slds-button slds-button_icon slds-button_icon-small slds-button_icon-inverse"
+                  title="Close" onclick={handleErrorClose}>
+                  <svg class="slds-button__icon" aria-hidden="true">
+                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                  </svg>
+                  <span class="slds-assistive-text">Close</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div if:true={isImportDataFailed}>
+            <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+              <span class="slds-assistive-text">error</span>
+              <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small"
+                title="Description of icon when needed">
+                <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                  <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#error"></use>
+                </svg>
+              </span>
+              <h2>
+                Some errors occur. Please contact our customer service for
+                further support.
+              </h2>
+              <div class="slds-notify__close">
+                <button class="slds-button slds-button_icon slds-button_icon-small slds-button_icon-inverse"
+                  title="Close" onclick={handleErrorClose}>
+                  <svg class="slds-button__icon" aria-hidden="true">
+                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                  </svg>
+                  <span class="slds-assistive-text">Close</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="slds-var-p-around_x-small slds-grid slds-grid--align-center">
+            <lightning-layout multiple-rows>
+              <template if:true={screen.isOnlyOne}>
+                <template if:true={totalAmountEqualtoZero}>
+                  <button class="slds-button slds-button_brand slds-text-heading_medium slds-var-p-around_small"
+                    title="Submission" onclick={handleSubmitForm}>
+                    <label style="padding: 0 60px; color: white">Submit</label>
+                  </button>
+                </template>
+                <template if:false={totalAmountEqualtoZero}>
+                  <button class="slds-button slds-button_brand slds-text-heading_medium slds-var-p-around_small"
+                    title="Process Payment" onclick={handleProcessPayment}>
+                    <label style="padding: 0 60px; color: white">Process Payment</label>
+                  </button>
+                </template>
+              </template>
+
+              <template if:false={screen.isOnlyOne}>
+                <template if:true={screen.isStartScreen}>
+                  <lightning-layout-item>
+                    <!-- <lightning-button onclick={handleClickNext} variant="brand" label="Next"
+                      class="slds-button_brand"></lightning-button> -->
+                    <button class="slds-button slds-button_brand slds-text-heading_medium slds-var-p-around_small"
+                      title="Next" onclick={handleClickNext}>
+                      <label style="padding: 0 60px; color: white">Next</label>
+                    </button>
+                  </lightning-layout-item>
+                </template>
+
+                <template if:true={screen.isMiddleScreen}>
+                  <lightning-layout-item class="slds-var-p-right_x-small">
+                    <!-- <lightning-button data-integrapay="BackButton" onclick={handleClickBack} variant="brand-outline"
+                      label="Back" title="Back" class="button-outline"></lightning-button> -->
+                    <button data-integrapay="BackButton"
+                      class="slds-button slds-button_brand slds-text-heading_medium slds-var-p-around_small"
+                      title="Back" onclick={handleClickBack}>
+                      <label style="padding: 0 60px; color: white">Back</label>
+                    </button>
+                    <!-- <lightning-button onclick={handleClickNext} variant="brand" label="Next"
+                      class="slds-button_brand"></lightning-button> -->
+                    <button class="slds-button slds-button_brand slds-text-heading_medium slds-var-p-around_small"
+                      title="Next" onclick={handleClickNext}>
+                      <label style="padding: 0 60px; color: white">Next</label>
+                    </button>
+                  </lightning-layout-item>
+                </template>
+
+                <template if:true={screen.isFinalScreen}>
+                  <template if:true={totalAmountEqualtoZero}>
+                    <button class="slds-button slds-button_brand slds-text-heading_medium slds-var-p-around_small"
+                      title="Submission" onclick={handleSubmitForm}>
+                      <label style="padding: 0 60px; color: white">Submit</label>
+                    </button>
+                  </template>
+                  <template if:false={totalAmountEqualtoZero}>
+                    <button class="slds-button slds-button_brand slds-text-heading_medium slds-var-p-around_small"
+                      title="Process Payment" onclick={handleProcessPayment}>
+                      <label style="padding: 0 60px">Process Payment</label>
+                    </button>
+                  </template>
+                </template>
+                <!-- if total amount equal to zero -> show button submit instead -->
+                <!-- <template if:false={totalAmountEqualtoZero}>
+                  <lightning-button onclick={handleSubmitForm} variant="brand" label="Submit" title="Submission"
+                    class="button-brand">
+                  </lightning-button>
+                </template> -->
+              </template>
+            </lightning-layout>
+          </div>
+        </div>
+      </template>
+    </template>
+
+    <template if:true={isUseThankYouPage}>
+      <template if:true={showThankYouPage}>
+        <lightning-formatted-rich-text value={thankYouPageContent}></lightning-formatted-rich-text>
+      </template>
+    </template>
+  </template>
+</template>

@@ -1,0 +1,7 @@
+{
+    "usedLicenses": 2,
+    "totalLicenses": 10,
+    "status": "Active",
+    "licenseId": "a0A5g000006myVyEAI",
+    "expirationDate": "2023-06-30"
+}
