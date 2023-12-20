@@ -162,9 +162,9 @@ export default class FormInit extends LightningElement {
           }
 
           // console.log("object reference: " + result.objectReference);
-          // console.log("field relation: " + result.fieldRelation);
+          console.log("field relation: " + result.fieldRelation);
           // console.log("this.pricebook: ", result.priceBookId);
-          console.log("result.productList: ", result.productList);
+          // console.log("result.productList: ", result.productList);
 
           // Update product list to initForm
           // Because render data to view ==> add namespace : "ccpformbuilder__" to
