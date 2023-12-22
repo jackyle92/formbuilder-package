@@ -149,9 +149,7 @@ export default class FormInit extends LightningElement {
         initData({
           formid: this.formid
         }).then((result) => {
-          console.log('result: ', result);
           this.isHaveLicense = result.isHaveLicense;
-          // this.isMaxQEqualto1 = result.isMaxQuanlityEqto1;
           this.paymentSetting.endpoint = result.endpoint;
           this.paymentSetting.businesskey = result.businesskey;
           this.paymentSetting.linkobject = result.objectReference;
@@ -160,35 +158,15 @@ export default class FormInit extends LightningElement {
           if (!this.backgroundColor) {
             this.backgroundColor = result.brandColor;
           }
+          const productList = [];
+          JSON.parse(result.productList).forEach(product => {
+            if(product.maxQuantityOfProduct != 0){
+              productList.push(product);
+            } 
+          })
+          this.paymentSetting.productList = productList;
+          console.log("result.productList: ", JSON.stringify(productList));
 
-          // console.log("object reference: " + result.objectReference);
-          console.log("field relation: " + result.fieldRelation);
-          // console.log("this.pricebook: ", result.priceBookId);
-          // console.log("result.productList: ", result.productList);
-
-          // Update product list to initForm
-          // Because render data to view ==> add namespace : "ccpformbuilder__" to
-          for (let pindex = 0; pindex < result.productList.length; pindex++) {
-            result.productList[pindex].Form__c =
-              result.productList[pindex][
-                this.namespacePrefix + "Form__c".trim()
-              ];
-            result.productList[pindex].Product__c =
-              result.productList[pindex][
-                this.namespacePrefix + "Product__c".trim()
-              ];
-            result.productList[pindex].unit_price__c =
-              result.productList[pindex][
-                this.namespacePrefix + "unit_price__c".trim()
-              ];
-            result.productList[pindex].value__c =
-              result.productList[pindex][
-                this.namespacePrefix + "value__c".trim()
-              ];
-          }
-
-          this.paymentSetting.productList = result.productList;
-          // console.log("jsondata: ", result.jsondata);
 
           if (result.jsondata && result.jsondata != "null") {
             this.listScreen = JSON.parse(result.jsondata);
@@ -336,34 +314,22 @@ export default class FormInit extends LightningElement {
     var productIndex = event.target.dataset.productindex;
     // console.log("=productIndex=" + productIndex);
     // console.log("=value=" + currentQuantity);
-    this.paymentSetting.productList[productIndex][
-      this.namespacePrefix + "value__c".trim()
-    ] = currentQuantity;
-    this.paymentSetting.productList[productIndex][
-      "value__c".trim()
-    ] = currentQuantity;
+    this.paymentSetting.productList[productIndex]['value'] = currentQuantity;
     console.log('Product List: ', this.paymentSetting.productList);
-    this.updateMapFieldValue(this.sumAmountStr, this.calculateSumAmount());this.showThankYouPage
+    this.updateMapFieldValue(this.sumAmountStr, this.calculateSumAmount());
+    this.showThankYouPage
   }
 
-  handlePickProduct(event) {
-    // console.log('this.namespacePrefix: ' + this.namespacePrefix);
-    var productIndex = event.target.dataset.productindex;
-    if (event.target.checked == true) {
-      this.paymentSetting.productList[productIndex][
-        this.namespacePrefix + "value__c".trim()
-      ] = 1;
-    } else {
-      this.paymentSetting.productList[productIndex][
-        this.namespacePrefix + "value__c".trim()
-      ] = 0;
-    }
-    // console.log(
-    //   "Picked Product:",
-    //   this.paymentSetting.productList[productIndex]
-    // );
-    this.updateMapFieldValue(this.sumAmountStr, this.calculateSumAmount());
-  }
+  // handlePickProduct(event) {
+  //   // console.log('this.namespacePrefix: ' + this.namespacePrefix);
+  //   var productIndex = event.target.dataset.productindex;
+  //   if (event.target.checked == true) {
+  //     this.paymentSetting.productList[productIndex]['value'] = 1;
+  //   } else {
+  //     this.paymentSetting.productList[productIndex]['value'] = 0;
+  //   }
+  //   this.updateMapFieldValue(this.sumAmountStr, this.calculateSumAmount());
+  // }
 
   updateMapFieldValue(mapping, value) {
     var fieldInfo = {};
@@ -389,9 +355,7 @@ export default class FormInit extends LightningElement {
       lindex++
     ) {
       this.sumAmountValue +=
-        this.paymentSetting.productList[lindex][
-          this.namespacePrefix + "value__c".trim()
-        ] * this.paymentSetting.productList[lindex][this.namespacePrefix +'unit_price__c'.trim()];
+        this.paymentSetting.productList[lindex]['value'] * this.paymentSetting.productList[lindex]['unitPrice'];
     }
 
     if (this.sumAmountValue) {
@@ -928,6 +892,7 @@ export default class FormInit extends LightningElement {
 
         console.log("json: ", JSON.stringify(that.listScreen));
         console.log('code', that.promotionCode);
+        console.log('productList String: ' , JSON.stringify(that.paymentSetting.productList));
         processPayment({
           jsonData: JSON.stringify(that.listScreen),
           linkobject: that.paymentSetting.linkobject,

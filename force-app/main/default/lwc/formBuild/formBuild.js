@@ -9,6 +9,7 @@ import getNameSpacePrefix from "@salesforce/apex/FormBuilderHelper.getNameSpaceP
 import getPicklistValue from "@salesforce/apex/FormBuilderCtrl.getPicklistValue";
 import getActiveLicense from "@salesforce/apex/ProductLicenseManagement.getActiveLicense";
 import LightningAlert from 'lightning/alert';
+import SystemModstamp from "@salesforce/schema/Account.SystemModstamp";
 
 export default class FormBuild extends LightningElement {
   @api recordId;
@@ -18,6 +19,7 @@ export default class FormBuild extends LightningElement {
   brandColor;
   priceBookId;
   productLookupId;
+  maxQuantityPrd = 0;
   productLookupName;
 
   @track listProduct = [];
@@ -149,6 +151,7 @@ export default class FormBuild extends LightningElement {
       if (result.priceBookId) {
         this.priceBookId = result.priceBookId;
       }
+      console.log('pricebookId: ', this.priceBookId);
 
       if (result.objectReference) {
         this.objectReference = result.objectReference;
@@ -163,7 +166,9 @@ export default class FormBuild extends LightningElement {
         this.pricebookOptions.push(pbObject);
       });
 
-      this.listProduct = result.productList;
+      console.log('result: ', result);
+      this.listProduct = JSON.parse(result.productList);
+      console.log('List Product First Query: ', JSON.stringify(this.listProduct));
       this.currencyCode = result.currencyCode;
       // this.isMaxQEqualto1 = result.isMaxQuanlityEqto1;
 
@@ -231,31 +236,44 @@ export default class FormBuild extends LightningElement {
   //   // console.log(this.isMaxQEqualto1);
   // }
 
+  handleSetUpLimitProductQuantity(event) {
+    this.maxQuantityPrd = event.target.value;
+  }
+
   addProduct(event) {
+    console.log(' pricebookId 22: ', this.priceBookId);
     var indexExisted = this.listProduct.findIndex(
       (x) => x.Product__c === this.productLookupId
     );
     if (indexExisted == -1) {
-      getProduct({ productId: this.productLookupId }).then((result) => {
+      getProduct({ 
+        productId: this.productLookupId, 
+          priceBookId: this.priceBookId }).then((result) => {
         var productObj = JSON.parse(result);
         var fpObject = {};
-        fpObject.Form__c = this.recordId;
-        fpObject.Product__c = productObj.Id;
-        fpObject.Name = productObj.Name;
+        fpObject.formId = this.recordId;
+        fpObject.productId = productObj.id;
+        fpObject.name = productObj.name;
+        fpObject.maxQuantityOfProduct = this.maxQuantityPrd;
+        fpObject.unitPrice = productObj.unitPrice;
         this.listProduct.push(fpObject);
-        // console.log(fpObject);
-        // console.log("this.listproduct: ", this.listProduct);
-      });
+        console.log("List Product Of Form: ", JSON.stringify(this.listProduct));
+      }).catch ( err => {
+          console.log(err)
+        }
+      );
     }
   }
 
   removeProduct(event) {
     var removeIndex = event.target.dataset.index;
-    if (this.listProduct[removeIndex].Id) {
-      this.listProductDel.push(this.listProduct[removeIndex].Id);
+    if (this.listProduct[removeIndex].id) {
+      this.listProductDel.push(this.listProduct[removeIndex].id);
     }
     this.listProduct.splice(removeIndex, 1);
   }
+
+  
 
   changeDisplayText(event) {
     console.log("==changeDisplayText==");
@@ -336,7 +354,6 @@ export default class FormBuild extends LightningElement {
     this.showSpinner = true;
 
     var jsonInput = JSON.stringify(this.listScreen);
-    // console.log("jsonInput: ", jsonInput);
 
     var formSetting = {};
     formSetting.id = this.recordId;
@@ -349,23 +366,23 @@ export default class FormBuild extends LightningElement {
     formSetting.objectReference = this.objectReference; // add core object for the form
     // formSetting.isMaxQEqualto1 = this.isMaxQEqualto1; // set max quantity for each product equal to 1
 
-    for (let pindex = 0; pindex < this.listProduct.length; pindex++) {
-      this.listProduct[pindex].ccpformbuilder__Form__c =
-        this.listProduct[pindex].Form__c;
-      this.listProduct[pindex].ccpformbuilder__Product__c =
-        this.listProduct[pindex].Product__c;
-      this.listProduct[pindex].ccpformbuilder__unit_price__c =
-        this.listProduct[pindex].unit_price__c;
-      this.listProduct[pindex].ccpformbuilder__value__c =
-        this.listProduct[pindex].value__c;
-    }
+    // for (let pindex = 0; pindex < this.listProduct.length; pindex++) {
+    //   this.listProduct[pindex].ccpformbuilder__Form__c =
+    //     this.listProduct[pindex].Form__c;
+    //   this.listProduct[pindex].ccpformbuilder__Product__c =
+    //     this.listProduct[pindex].Product__c;
+    //   this.listProduct[pindex].ccpformbuilder__unit_price__c =
+    //     this.listProduct[pindex].unit_price__c;
+    //   this.listProduct[pindex].ccpformbuilder__value__c =
+    //     this.listProduct[pindex].value__c;
+    // }
 
     formSetting.productList = this.listProduct;
 
     formSetting.productListDel = this.listProductDel;
     formSetting.currencyCode = this.currencyCode;
 
-    console.log(JSON.stringify(formSetting));
+    console.log('Form Setting: ' , JSON.stringify(formSetting));
 
     if(this.licenseStatusCode != 200) {
       LightningAlert.open({
@@ -377,6 +394,7 @@ export default class FormBuild extends LightningElement {
       return null;
     }
 
+    console.log('1');
     saveForm({
       jsonData: jsonInput,
       formSetting: JSON.stringify(formSetting),
@@ -393,7 +411,7 @@ export default class FormBuild extends LightningElement {
             this.listScreen = JSON.parse(result.jsondata);
           }
 
-          this.listProduct = result.productList;
+          this.listProduct = JSON.parse(result.productList);
           this.listProductDel = [];
 
           this.resetUpScreen();

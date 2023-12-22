@@ -251,7 +251,7 @@
                                         <td>
                                           <!-- <div class="slds-truncate slds-cell-wrap"> -->
                                           <div class="slds-cell-wrap">
-                                            {product.Name}
+                                            {product.name}
                                           </div>
                                         </td>
                                         <td>
@@ -266,9 +266,8 @@
                                           </div>
                                         </td>
                                         <td class="slds-text-align_right">
-                                          <lightning-formatted-number value={product.ccpformbuilder__unit_price__c}
-                                            format-style="currency" currency-code={currencyCode}
-                                            currency-display-as="code"
+                                          <lightning-formatted-number value={product.unitPrice} format-style="currency"
+                                            currency-code={currencyCode} currency-display-as="code"
                                             maximum-fraction-digits="1"></lightning-formatted-number>
                                         </td>
                                       </tr>
@@ -432,7 +431,7 @@
 
                                         <div class="slds-grid slds-col">
                                           <lightning-layout-item size="6"
-                                            class="slds-col slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12"
+                                            class="slds-col slds-small-size_6-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12"
                                             style="padding-right: 5px">
                                             <lightning-input data-integrapay="CardExpiryMonth" label="Expiry Month"
                                               type="text" placeholder="MM" required
@@ -448,7 +447,7 @@
                                         </div>
                                         <lightning-layout-item size="12"
                                           class="slds-small-size_6-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12">
-                                          <lightning-input data-integrapay="CardCcv" type="number" label="CVV" required
+                                          <lightning-input data-integrapay="CardCcv" type="text" label="CVV" required
                                             autocomplete="off"></lightning-input>
                                         </lightning-layout-item>
 

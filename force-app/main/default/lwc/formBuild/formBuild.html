@@ -1,3 +1,4 @@
+<!-- sldsValidatorIgnore -->
 <template>
   <lightning-card title="FORM BUILDER">
     <lightning-spinner if:true={showSpinner} variant="brand"></lightning-spinner>
@@ -289,17 +290,15 @@
                                               Product Name
                                             </th>
                                             <th style="line-height: 24px;border-top-right-radius: 5px;">
-                                              Quantity
+                                              Number Product Available
                                             </th>
                                           </tr>
                                         </thead>
                                         <tbody>
                                           <template for:each={listProduct} for:item="product" for:index="productIndex">
-                                            <tr key={product.Id}>
-                                              <td>{product.Name}</td>
-                                              <td>
-                                                <lightning-input type="number" variant="label-hidden"></lightning-input>
-                                              </td>
+                                            <tr key={product.id}>
+                                              <td>{product.name}</td>
+                                              <td>{product.maxQuantityOfProduct}</td>
                                             </tr>
                                           </template>
                                         </tbody>
@@ -747,37 +746,39 @@
                           field-level-help="Check this box if you want to maximise the quantity of each product equal to one."></lightning-input>
                       </div>
                     </div> -->
-                    <div class="slds-grid slds-gutters">
-                      <div class="slds-col slds-size_1-of-1">
+                    <div class="slds-grid slds-wrap slds-gutters slds-var-m-bottom_x-small">
+                      <div class="slds-col slds-size_12-of-12">
                         <lightning-combobox label="Currency Code" name="currencycode" value={currencyCode}
                           options={currencyCodeOption} onchange={handleChangeCurrencyCode}>
                         </lightning-combobox>
                       </div>
-                    </div>
-                    <div class="slds-grid slds-gutters">
-                      <div class="slds-col slds-size_1-of-1">
+                      <div class="slds-col slds-size_12-of-12">
                         <lightning-combobox name="pricebookcombobox" label="Price Book" value={priceBookId}
                           placeholder="Select Price Book" onchange={changePriceBook}
                           options={pricebookOptions}></lightning-combobox>
                       </div>
-                    </div>
-                    <br />
-                    <div class="slds-box">
-                      <div class="slds-grid slds-gutters slds-p-bottom_x-small">
-                        <div class="slds-col slds-size_9-of-12">
-                          <lightning-record-edit-form object-api-name={objectAPIName}>
-                            <lightning-input-field data-product="productLookup" variant="label-hidden"
-                              field-name={fieldName} value={productLookupId} onchange={handleProductLookup}>
-                            </lightning-input-field>
-                          </lightning-record-edit-form>
+                      <!-- <div class="slds-box"> -->
+                      <div class="slds-col slds-size_12-of-12">
+                        <lightning-record-edit-form object-api-name={objectAPIName}>
+                          <lightning-input-field data-product="productLookup" field-name={fieldName}
+                            value={productLookupId} onchange={handleProductLookup}>
+                          </lightning-input-field>
+                        </lightning-record-edit-form>
+                      </div>
+                      <div
+                        class="slds-col slds-size_12-of-12 slds-grid slds-grid_vertical-align-end slds-var-m-bottom_small">
+                        <div class="slds-col slds-size_9-of-12 slds-var-p-right_small">
+                          <lightning-input type="number" placeholder="Max quantity of Product"
+                            field-level-help="Set up max quantity for particular product before click Add button!"
+                            label="Available Number of Product" onchange={handleSetUpLimitProductQuantity}>
+                          </lightning-input>
                         </div>
-                        <div class="slds-col slds-size_3-of-12 slds-text-align_right">
-                          <lightning-button variant="brand-outline" label="Add" title="Add"
+                        <div class="slds-col slds-size_3-of-12">
+                          <lightning-button variant="brand" label="Add" title="Add"
                             onclick={addProduct}></lightning-button>
                         </div>
                       </div>
-
-                      <table class="slds-table">
+                      <table class="slds-col slds-size_12-of-12 slds-table">
                         <colgroup>
                           <col width="85%" />
                           <col width="15%" />
@@ -790,8 +791,8 @@
                         </thead>
                         <tbody>
                           <template for:each={listProduct} for:item="product" for:index="productIndex">
-                            <tr key={product.Id}>
-                              <td>{product.Name}</td>
+                            <tr key={product.id}>
+                              <td>{product.name}</td>
                               <td>
                                 <lightning-button-icon onclick={removeProduct} data-index={productIndex} size="small"
                                   icon-name="utility:delete" title="Delete"></lightning-button-icon>
@@ -801,6 +802,7 @@
                         </tbody>
                       </table>
                     </div>
+                    <!-- </div> -->
                   </lightning-accordion-section>
 
                   <lightning-accordion-section name="Fomulas" label="Fomulas">

@@ -329,10 +329,6 @@ public without sharing class FormInitCtrl {
     }
   }
 
-  // public static String getEmailReceiptConfirm(String linkobject, Map<String, List<FieldWrapper>> lstComponent) {
-  //   String emailReceiver;
-  //   return emailReceiver;
-  // }
 
   @AuraEnabled
   public static Map<String, String> processPayment(
@@ -355,9 +351,9 @@ public without sharing class FormInitCtrl {
       jsonData,
       List<Component>.class
     );
-    List<Form_Product__c> productList = (List<Form_Product__c>) JSON.deserialize(
+    List<FormSetting.cls_productList> productList = (List<FormSetting.cls_productList>) JSON.deserialize(
       productListStr,
-      List<Form_Product__c>.class
+      List<FormSetting.cls_productList>.class
     );
     String emailForSendingReceipt = '';
     String firstName = '';
@@ -370,13 +366,13 @@ public without sharing class FormInitCtrl {
     formId = getFormId(lstComponent);
 
     Map<Id, Integer> mapProductIds = new Map<Id, Integer>();
-    System.debug('==productListAAAAABBB==' + productList);
-    for (Form_Product__c fpr : productList) {
+    System.debug('PRODUCT LIST: ' + productList);
+    for (FormSetting.cls_productList fpr : productList) {
       Integer valueData = 0;
-      if (fpr.value__c != null) {
-        valueData = fpr.value__c.intValue();
+      if (fpr.value != null) {
+        valueData = fpr.value.intValue();
       }
-      mapProductIds.put(fpr.Product__c, valueData);
+      mapProductIds.put(fpr.productId, valueData);
     }
     System.debug('==mapProductIds==' + mapProductIds);
 

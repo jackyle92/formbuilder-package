@@ -27,17 +27,41 @@ public with sharing class FormBuilderCtrl {
   }
 
   @AuraEnabled
-  public static String getProduct(String productId) {
-    List<Product2> lstProduct = [
+  public static String getProduct(String productId, String priceBookId) {
+    try {
+      FormSetting.cls_productList product = new FormSetting.cls_productList();
+      List<Product2> lstProduct = [
       SELECT Id, Name
       FROM Product2
       WHERE Id = :productId
-    ];
-    if (!lstProduct.isEmpty()) {
-      return JSON.serialize(lstProduct[0]);
-    } else {
-      return JSON.serialize(new Product2());
+      ];
+
+      PricebookEntry productUnitPrice = [
+        SELECT Id, UnitPrice, Product2Id
+        FROM PricebookEntry
+        WHERE
+          Pricebook2Id = :priceBookId
+          AND Product2Id = :productId
+        LIMIT 1
+      ];
+      if(lstProduct.size() > 0) {
+        product.id = lstProduct[0].Id;
+        product.name = lstProduct[0].Name;
+        product.unitPrice = productUnitPrice.UnitPrice;
+      }
+
+      if (product.id != null) {
+        return JSON.serialize(product);
+      } else {
+        throw new AuraHandledException(
+            'Error when querying product based on Id get from selected product!'
+          );
+      }
+    } catch (Exception e) {
+      throw new AuraHandledException(e.getMessage());
     }
+
+    
   }
 
   /**
@@ -54,13 +78,6 @@ public with sharing class FormBuilderCtrl {
   ) {
     try {
       Boolean isHaveLicense = true;
-      // if (!Test.isRunningTest()) {
-      //   isHaveLicense = cppexchange.LicenseActivationChecking.isHaveLicense(
-      //     'CCP_Form_Builder'
-      //   );
-      // }
-
-
       if(!Test.isRunningTest()) {
         try {
           String activeLicense = ProductLicenseManagement.getActiveLicense();
@@ -74,20 +91,14 @@ public with sharing class FormBuilderCtrl {
           throw new FormBuilderException('Error, when try to get the active license. Please contact to owner of product to solve this problem.');
         }
       }
-
-      /*
-      if (!isHaveLicense) {
-        System.debug('Do not have license.');
-        throw new FormBuilderException('Do not have license.');
-      }
-      */
-      System.debug('==formSetting==');
-      System.debug(formSetting);
+      System.debug('Form Setting: ' + formSetting);
 
       FormSetting fsetting = (FormSetting) JSON.deserialize(
         formSetting,
         FormSetting.class
       );
+
+      System.debug('Form Setting.productList: ' + fsetting.productList);
 
       Form__c form = new Form__c();
       form.Id = fsetting.id;
@@ -105,9 +116,26 @@ public with sharing class FormBuilderCtrl {
         Database.delete(fsetting.productListDel);
       }
 
-      System.debug('==fsetting.productList==' + fsetting.productList);
+      // create form product to upsert data
+      List<Form_Product__c> formProductList = new List<Form_Product__c>();
+      for(Integer i = 0; i < fsetting.productList.size(); i++) {
+        System.debug('product data: ' + i + ' -- ' + fsetting.productList[i]);
+        Form_Product__c formproduct = new Form_Product__c();
+        formproduct.Id = fsetting.productList[i].id;
+        if(fsetting.productList[i].id == null) {
+          formproduct.Form__c = fsetting.productList[i].formId;
+        }
+        formproduct.Product__c = fsetting.productList[i].productId;
+        formproduct.Name = fsetting.productList[i].name;
+        formproduct.Available_Product_Quantity__c = fsetting.productList[i].maxQuantityOfProduct;
+        formproduct.value__c = fsetting.productList[i].value;
+        formproduct.unit_price__c = fsetting.productList[i].unitPrice;
+
+        // -- add to Form Product List
+        formProductList.add(formproduct);
+      }
       if (!fsetting.productList.isEmpty()) {
-        upsert fsetting.productList;
+        upsert formProductList;
       }
 
       List<Form_Component__c> lstScreen = new List<Form_Component__c>();

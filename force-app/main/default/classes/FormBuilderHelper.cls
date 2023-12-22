@@ -122,7 +122,7 @@ public without sharing class FormBuilderHelper {
 
     // Get products
     List<Form_Product__c> productList = [
-      SELECT Id, Name, Product__c, Form__c, value__c, unit_price__c
+      SELECT Id, Name, Product__c, Form__c, value__c, unit_price__c, Available_Product_Quantity__c
       FROM Form_Product__c
       WHERE Form__c = :formid
     ];
@@ -146,18 +146,30 @@ public without sharing class FormBuilderHelper {
       mapProductPrice.put(pre.Product2Id, pre.UnitPrice);
     }
 
-    for (Form_Product__c fp : productList) {
-      if (mapProductPrice.containsKey(fp.Product__c)) {
-        fp.unit_price__c = mapProductPrice.get(fp.Product__c);
+    //List of products
+    List<FormProductData> lstProductData = new List<FormProductData>();
+    for(Form_Product__c fp : productList) {
+      FormProductData productData = new FormProductData();
+      productData.id = fp.id;
+      productData.name = fp.name;
+      productData.formId = fp.Form__c;
+      productData.productId = fp.Product__c;
+      productData.unitPrice = fp.unit_price__c;
+      productData.maxQuantityOfProduct = Integer.valueOf(fp.Available_Product_Quantity__c);
+      lstProductData.add(productData);
+    }
+
+    for (FormProductData dataProduct : lstProductData) {
+      if (mapProductPrice.containsKey(dataProduct.productId)) {
+        dataProduct.unitPrice = mapProductPrice.get(dataProduct.productId);
       } else {
-        fp.unit_price__c = 0;
+        dataProduct.unitPrice = 0;
       }
     }
-    mapResults.put('productList', productList);
+    System.debug('Product Data List: ' + lstProductData);
+    mapResults.put('productList', JSON.serialize(lstProductData));
 
-    System.debug('==mapResults==');
-    System.debug(mapResults);
-
+    System.debug('Map result: ' + mapResults);
     return mapResults;
   }
 
@@ -413,5 +425,22 @@ public without sharing class FormBuilderHelper {
       throw new AuraHandledException(e.getMessage());
     }
     return strPaymentFee;
+  }
+
+  public class FormProductData {
+    public Decimal unitPrice;	//5000
+		public String productId;	//01t5h000007Nbz1AAC
+		public String name;	//GenWatt Diesel 10kW
+		public String id;	//a025h00000mTB83AAG
+		public String formId;	//a035h00000duMANAA2
+    public Integer maxQuantityOfProduct;
+    public Decimal value;
+    // public FormProductData (String id, String name, String formId, String productId, Decimal unitPrice) {
+    //   this.id = id;
+    //   this.name = name;
+    //   this.formId = formId;
+    //   this.productId = productId;
+    //   this.unitPrice = unitPrice;
+    // }
   }
 }
