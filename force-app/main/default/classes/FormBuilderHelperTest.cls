@@ -40,6 +40,12 @@ private with sharing class FormBuilderHelperTest {
     FormBuilderHelper.getPicklist(sObjType, fieldName);
   }
 
+  // test get map payment fee
+  @isTest
+  public static void getMapPaymentFeeTest() {
+    FormBuilderHelper.getMapPaymentFee();
+  }
+
   @isTest
   public static void formInitTest() {
 

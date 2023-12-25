@@ -1,5 +1,14 @@
 @isTest
 public with sharing class FormInitCtrlTest {
+    @TestSetup
+    static void makeData(){
+        Form__c testForm = new Form__c();
+        testForm.Form_Name__c = 'Test Form';
+        testForm.Brand_Color__c = '#FFFFFF';
+        testForm.isMaxQPEqual_to_1__c = false;
+        testForm.Object_Reference_N__c = 'Contact';
+        insert testForm;
+    }
     
     @isTest 
     public static void testInitData(){
@@ -85,6 +94,35 @@ public with sharing class FormInitCtrlTest {
         );//sdfsf
         FormInitCtrl.submitForm(jsonData, 'Contact');
         Test.stopTest();
+    }
+
+    @isTest
+    public static void updateQuantityOfFormProductsTest() {
+
+        // 1. get form Id
+        Form__c form = [SELECT Id FROM Form__c WHERE Form_Name__c = 'Test Form' LIMIT 1];
+        // 2. create form product
+        Product2 prod = new Product2(Name = 'Laptop X2000', Family = 'Hardware');
+        insert prod;
+        
+        Form_Product__c fp = new Form_Product__c();
+        fp.Product__c = prod.Id;
+        fp.Form__c = form.Id;
+        fp.Name = prod.Name;
+        insert fp;
+
+        // create formProductList
+        List<FormSetting.cls_productList> formProductList = new List<FormSetting.cls_productList>();
+        FormSetting.cls_productList cstProduct = new FormSetting.cls_productList();
+        cstProduct.formId = form.Id;
+        cstProduct.unitPrice = 2000;
+        cstProduct.value = 2;
+        cstProduct.maxQuantityOfProduct = 5;
+        cstProduct.id = fp.Id;
+
+        formProductList.add(cstProduct);
+
+        FormInitCtrl.updateQuantityOfFormProducts(formProductList);
     }
 
 }

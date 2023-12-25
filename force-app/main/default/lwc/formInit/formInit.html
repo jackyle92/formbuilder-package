@@ -1,6 +1,7 @@
+<!-- sldsValidatorIgnore -->
 <template>
   <div lwc:dom="manual"></div>
-  <lightning-spinner if:true={showSpinner} variant="brand"></lightning-spinner>
+  <lightning-spinner if:true={showSpinner} variant="brand" class="css-spinner"></lightning-spinner>
 
   <template if:false={isHaveLicense}>
     <lightning-formatted-text style="color: #c23934" value="Do not have license."></lightning-formatted-text>
@@ -525,8 +526,7 @@
                 </svg>
               </span>
               <h2>
-                Your payment is not completed, Please try again!
-                <!-- <a href="#">More Information</a> -->
+                {errorMessage}
               </h2>
               <div class="slds-notify__close">
                 <button class="slds-button slds-button_icon slds-button_icon-small slds-button_icon-inverse"
@@ -577,7 +577,30 @@
               </span>
               <h2>
                 Some errors occur. Please contact our customer service for
-                further support.
+                further support. &nbsp;
+              </h2>
+              <div class="slds-notify__close">
+                <button class="slds-button slds-button_icon slds-button_icon-small slds-button_icon-inverse"
+                  title="Close" onclick={handleErrorClose}>
+                  <svg class="slds-button__icon" aria-hidden="true">
+                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                  </svg>
+                  <span class="slds-assistive-text">Close</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div if:true={errorServiceMessage}>
+            <div class="container-error slds-notify slds-notify_alert slds-alert_error" role="alert">
+              <span class="slds-assistive-text">error</span>
+              <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small"
+                title="Description of icon when needed">
+                <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                  <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#error"></use>
+                </svg>
+              </span>
+              <h2>
+                Service currently unavailable - sorry we were not able to process your payment
               </h2>
               <div class="slds-notify__close">
                 <button class="slds-button slds-button_icon slds-button_icon-small slds-button_icon-inverse"

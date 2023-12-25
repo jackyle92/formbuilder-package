@@ -23,8 +23,11 @@ export default class FormInit extends LightningElement {
   isPaymentError = false;
   isSubmitError = false;
   errorPaymentRequired = false;
+  errorServiceMessage = false;
   isImportDataFailed = false;
   chargeOnCardHolder = false;
+
+  errorMessage;
 
   isUseThankYouPage = false;
   showThankYouPage = false;
@@ -290,8 +293,8 @@ export default class FormInit extends LightningElement {
         });
       })
       .catch((error) => {
-        throw new Error("error in loading script: " + error);
         console.log("error in loading script: " + error);
+        throw new Error("error in loading script: " + error);
       });
   }
 
@@ -348,7 +351,6 @@ export default class FormInit extends LightningElement {
 
   calculateSumAmount() {
     this.sumAmountValue = 0;
-    // console.log('prd list: ', this.paymentSetting.productList);
     for (
       let lindex = 0;
       lindex < this.paymentSetting.productList.length;
@@ -886,16 +888,9 @@ export default class FormInit extends LightningElement {
         $(cardCcv).val("");
         cardDetails = null;
         tokenizeRequest = null;
-        // console.log("That cardnumber", that.cardNumber);
-        // console.log("json Data: ", JSON.stringify(that.listScreen));
-        // console.log(
-        //   "productList Json: ",
-        //   JSON.stringify(that.paymentSetting.productList)
-        // );
-
-        console.log("json: ", JSON.stringify(that.listScreen));
-        console.log('code', that.promotionCode);
-        console.log('productList String: ' , JSON.stringify(that.paymentSetting.productList));
+        console.log("components: ", JSON.stringify(that.listScreen));
+        console.log('Promotion Code: ', that.promotionCode);
+        console.log('Product List String: ' , JSON.stringify(that.paymentSetting.productList));
         processPayment({
           jsonData: JSON.stringify(that.listScreen),
           linkobject: that.paymentSetting.linkobject,
@@ -915,7 +910,7 @@ export default class FormInit extends LightningElement {
                 for (let i = 0; i < that.listScreen.length; i++) {
                   that.listScreen[i].isShow = false;
                 }
-                this.showSpinner = false;
+                that.showSpinner = false;
                 that.showThankYouPage = true;
                 // Replace thanks content
                 var tempreplace = that.thankYouPageContent;
@@ -933,10 +928,9 @@ export default class FormInit extends LightningElement {
                 that.thankYouPageContent = tempreplace;
               }
             } else {
-              // errorsDiv.text("Error: " + result.Message);
-              console.log('Payment Error');
-              console.log('this.isPaymentError: ', this.isPaymentError);
-              this.isPaymentError = true;
+              console.log('this.isPaymentError: ', that.isPaymentError);
+              that.errorMessage = `Your payment is not completed due to error -- ${result.Message}, Please try again`;
+              that.isPaymentError = true;
               btn.prop("disabled", false);
               backbtn.prop("disabled", false);
             }
@@ -944,16 +938,14 @@ export default class FormInit extends LightningElement {
           })
           .catch((error) => {
             that.showSpinner = false;
-            this.isImportDataFailed = true;
-            errorsDiv.text(
-              "Some errors occur. Please contact our customer service for further support."
-            );
+            that.isImportDataFailed = true;
             btn.prop("disabled", false);
             backbtn.prop("disabled", false);
           });
       },
       error: function (dataFail) {
         processingDiv.html("");
+        that.errorServiceMessage = true;
         errorsDiv.text(
           "Service currently unavailable - sorry we were not able to process your payment"
         );

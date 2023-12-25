@@ -4,6 +4,16 @@
   --slds-c-button-brand-color-background: #0070d2;
 }
 
+.css-spinner {
+  position: absolute;
+  content: 'Please wait while loading';
+  width: 100%;
+  text-align: center;
+  top: calc(50% + 3em);
+  font-weight: bold;
+  color: #0465c6;
+}
+
 .flex-container {
   display: flex;
   flex-flow: row wrap;
@@ -126,4 +136,4 @@ button label {
 @media only screen and (min-width: 430px) and (max-width: 768px) {}
 
 /* for smartphone */
-@media only screen (max-width: 430px) {}
+@media only screen and (max-width: 430px) {}
