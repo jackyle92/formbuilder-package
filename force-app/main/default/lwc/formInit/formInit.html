@@ -261,7 +261,8 @@
                                                   type="number" value={product.ccpformbuilder__value__c}
                                                   class="slds-input slds-text-align_right slds-p-around_none" min="0" /> -->
                                               <c-quantity-counter-elm data-productindex={productIndex}
-                                                onupdatequantity={updateQuantity}></c-quantity-counter-elm>
+                                                onupdatequantity={updateQuantity}
+                                                max-quantity-of-product={product.maxQuantityOfProduct}></c-quantity-counter-elm>
                                             </div>
                                           </div>
                                         </td>
@@ -484,7 +485,7 @@
 
 
           <div if:true={isSubmitError}>
-            <div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
+            <div class="container-error slds-notify slds-notify_alert slds-alert_warning" role="alert">
               <span class="slds-assistive-text">warning</span>
               <span class="slds-icon_container slds-icon-utility-warning slds-m-right_x-small"
                 title="Description of icon when needed">
@@ -514,7 +515,8 @@
           </div>
 
           <div if:true={isPaymentError}>
-            <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+            <Strong>Payment Error</Strong>
+            <div class="container-error slds-notify slds-notify_alert slds-alert_error" role="alert">
               <span class="slds-assistive-text">error</span>
               <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small"
                 title="Description of icon when needed">
@@ -540,7 +542,7 @@
 
           <!-- payment required in form -->
           <div if:true={errorPaymentRequired}>
-            <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+            <div class="container-error slds-notify slds-notify_alert slds-alert_error" role="alert">
               <span class="slds-assistive-text">error</span>
               <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small"
                 title="Description of icon when needed">
@@ -565,7 +567,7 @@
           </div>
 
           <div if:true={isImportDataFailed}>
-            <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+            <div class="container-error slds-notify slds-notify_alert slds-alert_error" role="alert">
               <span class="slds-assistive-text">error</span>
               <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small"
                 title="Description of icon when needed">

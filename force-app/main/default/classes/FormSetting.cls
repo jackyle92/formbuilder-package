@@ -30,7 +30,7 @@ public with sharing class FormSetting {
 		public String id;	//a025h00000mTB83AAG
 		public String formId;	//a035h00000duMANAA2
     public Integer maxQuantityOfProduct;
-    public Decimal value;
+    public Decimal value; // update by quantity of product when user increase or decrease quantity
 	}
 	public static FormSetting parse(String json){
 		return (FormSetting) System.JSON.deserialize(json, FormSetting.class);

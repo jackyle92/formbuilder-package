@@ -1,7 +1,8 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, api } from 'lwc';
 
 export default class QuantityCounterElm extends LightningElement {
   quantity = 0;
+  @api maxQuantityOfProduct;
 
 
   setDecrementCounter() {
@@ -14,6 +15,9 @@ export default class QuantityCounterElm extends LightningElement {
 
   setIncrementCounter() {
     this.quantity++;
+    if(this.quantity > this.maxQuantityOfProduct) {
+      this.quantity = this.maxQuantityOfProduct;
+    }
     this.updateQuantity();
   }
 

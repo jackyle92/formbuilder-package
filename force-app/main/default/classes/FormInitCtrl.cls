@@ -5,26 +5,13 @@
  */
 
 public without sharing class FormInitCtrl {
+
+  public class CustomException extends Exception {}
   // Add filter to the contact query <NameField, Value> Ex. <'MemberNumber__c', '1223992'>
   public static Map<String, String> mapFilterContactQuery = new Map<String, String>();
 
   @AuraEnabled
   public static Map<String, Object> initData(String formid) {
-    /**
-     Boolean isHaveLicense = true;
-    if (!Test.isRunningTest()) {
-      isHaveLicense = cppexchange.LicenseActivationChecking.isHaveLicense(
-        'CCP_Form_Builder'
-      );
-    }
-
-    if (!isHaveLicense) {
-      System.debug('Do not have license.');
-      Map<String, Object> mapResults = new Map<String, Object>();
-      mapResults.put('isHaveLicense', false);
-      return mapResults;
-    }
-     */
 
     if (!Test.isRunningTest()) {
       try {
@@ -51,9 +38,6 @@ public without sharing class FormInitCtrl {
       FROM PaymentSetting__mdt
       WHERE DeveloperName = :Constants.PAYMENT_SETTING
     ];
-
-    // LinkOppToObject__c,
-    // LinkOppUsingField__c
 
     mapResults.put('isHaveLicense', true);
     mapResults.put('endpoint', config.IntegraPay_endpoint__c);
@@ -341,8 +325,6 @@ public without sharing class FormInitCtrl {
     Boolean deductedFromSettlement,
     String promotionCode
   ) {
-    System.debug('==productListStr==');
-    System.debug(productListStr);
 
     String formId = '';
     Decimal proRate = 0;
@@ -355,6 +337,7 @@ public without sharing class FormInitCtrl {
       productListStr,
       List<FormSetting.cls_productList>.class
     );
+
     String emailForSendingReceipt = '';
     String firstName = '';
     String lastName = '';
@@ -367,6 +350,7 @@ public without sharing class FormInitCtrl {
 
     Map<Id, Integer> mapProductIds = new Map<Id, Integer>();
     System.debug('PRODUCT LIST: ' + productList);
+    //Value in product list is the quantity 
     for (FormSetting.cls_productList fpr : productList) {
       Integer valueData = 0;
       if (fpr.value != null) {
@@ -374,7 +358,7 @@ public without sharing class FormInitCtrl {
       }
       mapProductIds.put(fpr.productId, valueData);
     }
-    System.debug('==mapProductIds==' + mapProductIds);
+    System.debug('==mapProductIds==' + mapProductIds); // productId : quantity
 
     // get price amount
     List<PricebookEntry> lstPricebookEntry = [
@@ -454,38 +438,28 @@ public without sharing class FormInitCtrl {
       req.CurrencyCode = 'AUD';
       req.CardToken = cardToken;
       req.Payer = payer;
-
       req.profile = 1;
-      System.debug('request: ' + req);
-
       if (
         config.IntegraPay_Deducted_From_Settlement__c != deductedFromSettlement
       )
         // req.profile = 2;
-        System.debug('Before');
-      IntegraPayService.IntegraTransResponse response = new IntegraPayService.IntegraTransResponse();
-      try {
-        response = IntegraPayService.processLiveTransaction(req);
-      } catch (Exception e) {
-        System.debug(e);
-      }
+      System.debug('Before');
+      IntegraPayService.IntegraTransResponse response = IntegraPayService.processLiveTransaction(req);
 
-      System.debug('After');
+
       if (response.statusCode == Constants.STATUS_CODE_SUCCESS) {
 
         //update promotioncode status to used
-        Promotion_Code_Controller.updateUsedPromotionCode(promotionCode, formId);
+        if(promotionCode != null) {
+          Promotion_Code_Controller.updateUsedPromotionCode(promotionCode, formId);
+        }
         Decimal feePerMember = (response.processedAmount - totalAmount)
           .divide(1, 2, System.RoundingMode.DOWN);
 
         System.debug('response statuscode: ' + response.statusCode);
         upsert lstRecord;
-
         //Create opp
-        System.debug('bf if');
         Opportunity opp = new Opportunity();
-        // Opportunity name = name form + Who sent form + Transaction date
-        // Query and get form name
         List<Form__c> fB = [
           SELECT Id, name, Form_Name__c
           FROM Form__c
@@ -515,7 +489,6 @@ public without sharing class FormInitCtrl {
         opp.put(linkOppField, lstRecord[linkObjIndex].Id);
 
         insert opp;
-        System.debug('After if');
 
         List<OpportunityLineItem> lstOppLine = new List<OpportunityLineItem>();
         for (PricebookEntry pbEntry : lstPricebookEntry) {
@@ -537,32 +510,28 @@ public without sharing class FormInitCtrl {
             }
           }
         }
-        System.debug('1');
         if (!lstOppLine.isEmpty()) {
-          try {
             insert lstOppLine;
-          } catch (Exception e) {
-            System.debug(e);
-          }
         }
-        System.debug('2');
+        // Update the available quantity of form product
+        updateQuantityOfFormProducts(productList);
         result.put('Status', 'Success');
-
-        // Log form data to SF Form_Data object
-        // try{
-        //   Form_Data__c formData = new Form_Data__c();
-        //   formData.Form_Name__c = formName;
-        //   formData.Json_Data__c = jsonData;
-        //   formData.Time_Submitted__c = Datetime.now();
-        //   insert formData;
-        // } catch (Exception e) {
-        //   System.debug('Error: ' + e.getMessage());
-        // }
-
+        /**
+         * // Log form data to SF Form_Data object
+        try{
+          Form_Data__c formData = new Form_Data__c();
+          formData.Form_Name__c = formName;
+          formData.Json_Data__c = jsonData;
+          formData.Time_Submitted__c = Datetime.now();
+          insert formData;
+        } catch (Exception e) {
+          System.debug('Error: ' + e.getMessage());
+        }
+         */
       } else {
         result.put('Status', 'Fail');
         result.put('Message', response.statusDescription);
-        System.debug(response);
+        System.debug('Error response: ' + response);
       }
 
       return result;
@@ -583,10 +552,6 @@ public without sharing class FormInitCtrl {
     }
   }
 
-  // public static fieldWrapper createFieldWrapper(String fieldName, String fieldValue) {
-  //   FieldWrapper fw = new FieldWrapper(objName, fieldName);
-  //   return null;
-  // }
 
   public class FieldWrapper {
     public String fieldName;
@@ -599,6 +564,27 @@ public without sharing class FormInitCtrl {
     public FieldWrapper(String fieldName, String fieldValue) {
       this.fieldName = fieldName;
       this.fieldValue = fieldValue;
+    }
+  }
+
+  /**
+   * @Description: Update the quantity for form product
+   * @param: Form Id, productList
+   * @return 
+   */
+  public static void updateQuantityOfFormProducts( List<FormSetting.cls_productList> formProductList) {
+    List<Form_Product__c> formProductsUpdate = new List<Form_Product__c>();
+    for(FormSetting.cls_productList fp: formProductList){
+      if(fp.value != null) {
+        Form_Product__c formProductUpdate = new Form_Product__c();
+        formProductUpdate.Id = fp.id;
+        formProductUpdate.Available_Product_Quantity__c = fp.maxQuantityOfProduct - fp.value;
+        formProductsUpdate.add(formProductUpdate);
+      }
+    }
+    System.debug('Update Quantity: ' + formProductsUpdate);
+    if(formProductsUpdate.size() > 0) {
+      update formProductsUpdate;
     }
   }
 }

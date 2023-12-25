@@ -21,12 +21,12 @@ public with sharing class FormBuilderCtrlTest {
   public static void testSaveForm() {
     Id pricebookId = Test.getStandardPricebookId();
 
+    System.debug('pricebookId: ' + pricebookId);
     Product2 pro2 = new Product2(Name = 'BXCD', isActive = true);
     insert pro2;
     System.debug('==pro2==' + pro2);
 
-    // cover getProduct
-    FormBuilderCtrl.getProduct(pro2.Id);
+   
 
     PricebookEntry pbe2 = new PricebookEntry(
       unitprice = 2,
@@ -37,6 +37,9 @@ public with sharing class FormBuilderCtrlTest {
     );
     insert pbe2;
     System.debug('==pbe2==' + pbe2);
+
+     // cover getProduct
+    FormBuilderCtrl.getProduct(pro2.Id, pricebookId);
 
     Form__c testForm = new Form__c();
     testForm.Form_Name__c = 'Test Form';

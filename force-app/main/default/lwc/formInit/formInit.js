@@ -160,7 +160,7 @@ export default class FormInit extends LightningElement {
           }
           const productList = [];
           JSON.parse(result.productList).forEach(product => {
-            if(product.maxQuantityOfProduct != 0){
+            if(product.maxQuantityOfProduct > 0){
               productList.push(product);
             } 
           })
@@ -793,6 +793,8 @@ export default class FormInit extends LightningElement {
       DeviceData: deviceData
     };
 
+    
+
     if (!this.IntegraPayIsValidCardNumber($(cardNumber).val())) {
       cardNumber.setCustomValidity("Missing or invalid card number entered");
       cardNumber.reportValidity();
@@ -847,6 +849,7 @@ export default class FormInit extends LightningElement {
       errorsDiv.text("Credit card is expired");
       return;
     }
+
 
     btn.prop("disabled", true);
     backbtn.prop("disabled", true);
@@ -930,11 +933,12 @@ export default class FormInit extends LightningElement {
                 that.thankYouPageContent = tempreplace;
               }
             } else {
-              errorsDiv.text("Error: " + result.Message);
+              // errorsDiv.text("Error: " + result.Message);
+              console.log('Payment Error');
+              console.log('this.isPaymentError: ', this.isPaymentError);
+              this.isPaymentError = true;
               btn.prop("disabled", false);
               backbtn.prop("disabled", false);
-              this.isPaymentError = true;
-              // window.alert("Your payment is not completed, Please try again");
             }
             that.showSpinner = false;
           })

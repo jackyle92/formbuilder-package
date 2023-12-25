@@ -72,14 +72,14 @@
 .slds-button_brand:hover {}
 
 .button-outline {
-  /* --sds-c-button-outline-brand-color-border: var(--brandColor);
+  --sds-c-button-outline-brand-color-border: var(--brandColor);
   --sds-c-button-outline-brand-color-border-hover: var(--brandColor);
   --sds-c-button-outline-brand-color-border-active: var(--brandColor);
   --sds-c-button-outline-brand-color-background-active: transparent;
   --sds-c-button-text-color: var(--brandColor);
   --sds-c-button-text-color-active: var(--brandColor);
   --sds-c-button-inverse-text-color: var(--brandColor);
-  --sds-c-button-inverse-text-color-active: var(--brandColor); */
+  --sds-c-button-inverse-text-color-active: var(--brandColor);
 }
 
 .col-name {
@@ -96,6 +96,10 @@
   visibility: visible !important;
   opacity: 1 !important;
   color: #f03e3e;
+}
+
+.container-error {
+  border-radius: 5px;
 }
 
 button label {
